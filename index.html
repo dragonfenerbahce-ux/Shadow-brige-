@@ -10,17 +10,29 @@
   </head>
   <body>
     <main class="game">
-      <header class="hud">
-        <span id="level-label">Level 1</span>
-        <span id="moves">Moves: 0</span>
-      </header>
-      <canvas id="board" aria-label="Game board"></canvas>
-      <p id="message" class="message" role="status">Set the sun, press Go, and keep turning it while Pip walks.</p>
-      <footer class="controls">
-        <button id="restart" class="btn btn-secondary" type="button">Restart</button>
-        <button id="go" class="btn btn-primary" type="button">Go</button>
-        <button id="next" class="btn btn-primary" type="button" hidden>Next level</button>
-      </footer>
+      <section id="select-screen" class="screen">
+        <header class="hud">
+          <span>Shadowbridge</span>
+          <span id="done-count">0 of 10 done</span>
+        </header>
+        <p class="message">Pick a level.</p>
+        <div id="level-grid" class="level-grid"></div>
+      </section>
+
+      <section id="play-screen" class="screen" hidden>
+        <header class="hud">
+          <button id="back" class="btn-link" type="button">‹ Levels</button>
+          <span id="level-label">Level 1</span>
+          <span id="moves">Moves: 0</span>
+        </header>
+        <canvas id="board" aria-label="Game board"></canvas>
+        <p id="message" class="message" role="status">Set the sun, press Go, and keep turning it while Pip walks.</p>
+        <footer class="controls">
+          <button id="restart" class="btn btn-secondary" type="button">Restart</button>
+          <button id="go" class="btn btn-primary" type="button">Go</button>
+          <button id="next" class="btn btn-primary" type="button" hidden>Next level</button>
+        </footer>
+      </section>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

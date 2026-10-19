@@ -1,7 +1,9 @@
-import { LEVELS, sameCell, snapAngle, type Cell } from "./game/level";
+import { sameCell, snapAngle, type Cell } from "./game/level";
+import { LEVELS } from "./game/levels";
 import { computeShadows } from "./game/shadows";
 import { exitDistances, isSafe, nextStep } from "./game/path";
 import { computeLayout, draw, sunPosition, type Layout, type PipState } from "./render";
+import { browserStore, isUnlocked, loadProgress, recordWin, saveProgress } from "./progress";
 
 const STEP_MS = 420;
 const MELT_SECONDS = 0.7;
@@ -19,6 +21,14 @@ const messageEl = document.querySelector<HTMLParagraphElement>("#message")!;
 const goBtn = document.querySelector<HTMLButtonElement>("#go")!;
 const restartBtn = document.querySelector<HTMLButtonElement>("#restart")!;
 const nextBtn = document.querySelector<HTMLButtonElement>("#next")!;
+const backBtn = document.querySelector<HTMLButtonElement>("#back")!;
+const selectScreen = document.querySelector<HTMLElement>("#select-screen")!;
+const playScreen = document.querySelector<HTMLElement>("#play-screen")!;
+const levelGrid = document.querySelector<HTMLDivElement>("#level-grid")!;
+const doneCountEl = document.querySelector<HTMLSpanElement>("#done-count")!;
+
+const store = browserStore();
+let progress = loadProgress(store);
 
 type Phase = "idle" | "walking" | "melting" | "won" | "melted";
 
@@ -76,6 +86,45 @@ function loadLevel(index: number) {
   level = LEVELS[index];
   toExit = exitDistances(level);
   layout = computeLayout(canvas.clientWidth, level);
+  restart();
+}
+
+// --- Screens -------------------------------------------------------------------
+
+function renderLevelGrid() {
+  const done = LEVELS.filter((l) => progress[l.id] !== undefined).length;
+  doneCountEl.textContent = `${done} of ${LEVELS.length} done`;
+  levelGrid.replaceChildren(
+    ...LEVELS.map((l, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "level-btn";
+      const best = progress[l.id];
+      const open = isUnlocked(progress, l.id);
+      btn.disabled = !open;
+      if (best !== undefined) btn.classList.add("done");
+      const label = best !== undefined ? `best ${best}` : open ? "new" : "locked";
+      btn.innerHTML = `${l.id}<small>${label}</small>`;
+      btn.addEventListener("click", () => showPlay(i));
+      return btn;
+    }),
+  );
+}
+
+function showSelect() {
+  loopId++;
+  playScreen.hidden = true;
+  selectScreen.hidden = false;
+  renderLevelGrid();
+}
+
+function showPlay(index: number) {
+  selectScreen.hidden = true;
+  playScreen.hidden = false;
+  levelIndex = index;
+  level = LEVELS[index];
+  toExit = exitDistances(level);
+  resize();
   restart();
 }
 
@@ -166,6 +215,8 @@ function startWalk() {
 
       if (sameCell(from, level.exit) && !to) {
         phase = "won";
+        progress = recordWin(progress, level.id, moves);
+        saveProgress(store, progress);
         const last = levelIndex === LEVELS.length - 1;
         setMessage(last ? `Pip made it! All levels done. Moves: ${moves}` : `Pip made it! Moves: ${moves}`);
         updateHud();
@@ -201,8 +252,7 @@ goBtn.addEventListener("click", () => {
 
 restartBtn.addEventListener("click", restart);
 nextBtn.addEventListener("click", () => loadLevel(levelIndex + 1));
+backBtn.addEventListener("click", showSelect);
 window.addEventListener("resize", resize);
 
-resize();
-setMessage(HINT);
-updateHud();
+showSelect();

@@ -44,3 +44,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Playtest said shadows felt inconsistent and levels were too hard; free angles made shadows jump between cells and needed degree-level precision.
 - Alternative considered: Keep free angles and draw the real shadow shape as a soft area.
 - Trade-off: Less smooth, "magical" sun movement; fewer distinct level ideas per board.
+
+### 2026-10-19: 10 levels with level select and saved progress
+- Decision: Grow from 3 to 10 levels (8 directions on 7x7, then 16 directions on 7x7, then 16 on 9x9). Add a level select screen; progress (best moves per level) is saved in the browser on the phone; levels unlock in order.
+- Reason: Playtest liked the snapped-sun levels and asked for more, with growing sun directions and board size.
+- Alternative considered: Add a new tile mechanic (bomb) at the same time.
+- Trade-off: Ten levels with one rule may feel repetitive; a new mechanic waits until these are played.

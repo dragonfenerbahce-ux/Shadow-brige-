@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { exitDistances, isSafe, nextStep, walkUntilStop } from "./path";
 import { minTurns, solvableWithOneAngle } from "./solver";
-import { LEVELS, snapAngle, type Level } from "./level";
+import { snapAngle, type Level } from "./level";
+import { LEVELS } from "./levels";
 
 // A 5x1 corridor: start on the left, exit on the right.
 const corridor: Level = {
@@ -64,7 +65,7 @@ describe("nextStep", () => {
 });
 
 /** Fewest one-notch sun turns after Go, per level. */
-const EXPECTED_TURNS = [2, 3, 5];
+const EXPECTED_TURNS = [2, 3, 4, 5, 6, 9, 6, 7, 8, 9];
 
 describe.each(LEVELS.map((level, i) => [level.id, level, EXPECTED_TURNS[i]] as const))("level %i", (_id, level, turns) => {
   it("cannot be solved with one sun angle", () => {

@@ -9,13 +9,14 @@
 - [x] Levels 2-3 and Next level button
 - [x] Live-walk rule (turn sun while Pip walks) with 3 harder levels
 - [x] Sun snaps to 8/16 directions; easier, predictable levels
+- [x] 10 levels (7x7 and 9x9), level select screen, saved progress
 
 ## Now
-- [ ] iPhone test of snapped-sun levels by Product Owner
+- [ ] iPhone test of the 10 levels by Product Owner
 
 ## Next
 - [ ] Result overlay (Retry / Next / Levels)
-- [ ] Level select screen with saved progress
+- [ ] First new mechanic: "light stone" tile (always lit, cannot be shaded) - proposal, not approved yet
 - [ ] iPhone playtest with a friend: is it fun?
 
 ## Later

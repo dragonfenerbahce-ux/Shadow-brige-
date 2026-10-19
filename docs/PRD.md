@@ -9,7 +9,7 @@ Test whether the core mechanic is fun: the player drags the sun, block shadows m
 - As a player, I pick a level and see which levels I have finished and my best move count.
 
 ## Screens (max 3)
-1. Level select: 3 level buttons, each shows done/not done and best moves.
+1. Level select: 10 level buttons, each shows done/new/locked and best moves. A level unlocks when the one before it is done.
 2. Game: top-down grid board, blocks, sun handle at the edge, Pip, exit, move counter, "Go" and "Restart" buttons.
 3. Result overlay: "Pip made it!" or "Pip melted", with Retry / Next / Levels buttons.
 
@@ -28,9 +28,9 @@ Per level: completed (yes/no) and best move count. Stored in the browser on the 
 
 ## Acceptance criteria
 - Playable on iPhone Safari with one finger; shadows follow the drag without visible lag.
-- All 3 levels are solvable, none with a single sun direction; levels 1-2 use 8 directions, level 3 uses 16.
+- All 10 levels are solvable, none with a single sun direction. Difficulty grows: levels 1-3 use 8 directions on 7x7, levels 4-6 use 16 directions on 7x7, levels 7-10 use 16 directions on 9x9.
 - Progress survives closing and reopening the page.
 - Game logic (shadows, path finding, win/lose) is covered by automated tests.
 
 ## Out of scope
-- 3D, sound, settings, pause menu, stars, block rotation, moving blocks, more than 3 levels, Stitch UI, Unity.
+- 3D, sound, settings, pause menu, stars, block rotation, moving blocks, new tile types, more than 10 levels, Stitch UI, Unity.
