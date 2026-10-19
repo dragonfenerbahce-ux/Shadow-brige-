@@ -1,4 +1,4 @@
-import type { Level } from "./game/level";
+import { litByStone, type Level } from "./game/level";
 
 export const COLORS = {
   coral: "#FF8A65",
@@ -98,10 +98,34 @@ export function draw(
   // Floor tiles, shadows.
   for (let y = 0; y < level.size; y++) {
     for (let x = 0; x < level.size; x++) {
-      ctx.fillStyle = shadow[y][x] ? "rgba(59, 42, 92, 0.55)" : "#FFE6C2";
+      ctx.fillStyle = shadow[y][x] ? "rgba(59, 42, 92, 0.55)" : litByStone(level, { x, y }) ? "#FFF6B0" : "#FFE6C2";
       roundRect(ctx, cellX(x) + gap, cellY(y) + gap, cell - gap * 2, cell - gap * 2, cell * 0.15);
       ctx.fill();
     }
+  }
+
+  // Light stones: a glowing gem that lights the cells beside it.
+  for (const l of level.lights ?? []) {
+    const cx = cellX(l.x) + cell / 2;
+    const cy = cellY(l.y) + cell / 2;
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, cell * 1.2);
+    glow.addColorStop(0, "rgba(255, 200, 87, 0.55)");
+    glow.addColorStop(1, "rgba(255, 200, 87, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, cell * 1.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = COLORS.sun;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - cell * 0.3);
+    ctx.lineTo(cx + cell * 0.22, cy);
+    ctx.lineTo(cx, cy + cell * 0.3);
+    ctx.lineTo(cx - cell * 0.22, cy);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = COLORS.coral;
+    ctx.lineWidth = Math.max(1.5, cell * 0.04);
+    ctx.stroke();
   }
 
   // Start and exit.

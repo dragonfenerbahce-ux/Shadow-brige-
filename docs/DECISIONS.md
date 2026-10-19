@@ -50,3 +50,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Playtest liked the snapped-sun levels and asked for more, with growing sun directions and board size.
 - Alternative considered: Add a new tile mechanic (bomb) at the same time.
 - Trade-off: Ten levels with one rule may feel repetitive; a new mechanic waits until these are played.
+
+### 2026-10-19: 40 levels with a slow ramp; light stones from level 35
+- Decision: 40 levels. Early levels are quick (1-2 sun turns); the old level 8 difficulty (9x9, 16 directions, about 7 turns) arrives around levels 21-25; levels 26-34 are harder; light stones start at level 35 with an intro hint. Saved progress moved to a new storage key because level numbers changed.
+- Reason: Product Owner found the 10-level ramp good but steep (stuck around level 8) and wanted more, faster early levels, with the light tile around levels 35-40.
+- Alternative considered: A bomb tile; rejected earlier for not fitting the calm light/shadow theme.
+- Trade-off: Earlier saved progress on the phone is reset once.

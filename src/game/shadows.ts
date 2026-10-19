@@ -1,4 +1,4 @@
-import { type Level, isBlock } from "./level";
+import { type Level, isBlock, litByStone } from "./level";
 
 const HALF = 0.5;
 const EPS = 1e-9;
@@ -16,7 +16,8 @@ function axisRange(offset: number, dir: number): [number, number] | null {
 /**
  * Returns shadow[y][x] = true for floor cells in shadow.
  * Each block's square is swept away from the sun for `h` cells; a floor cell is
- * in shadow when its center lies inside that swept square.
+ * in shadow when its center lies inside that swept square. Cells lit by a light
+ * stone are never in shadow.
  */
 export function computeShadows(level: Level, sunAngleDeg: number): boolean[][] {
   const rad = (sunAngleDeg * Math.PI) / 180;
@@ -28,7 +29,7 @@ export function computeShadows(level: Level, sunAngleDeg: number): boolean[][] {
   for (const block of level.blocks) {
     for (let y = 0; y < level.size; y++) {
       for (let x = 0; x < level.size; x++) {
-        if (grid[y][x] || isBlock(level, { x, y })) continue;
+        if (grid[y][x] || isBlock(level, { x, y }) || litByStone(level, { x, y })) continue;
         const rx = axisRange(x - block.x, dx);
         const ry = axisRange(y - block.y, dy);
         if (!rx || !ry) continue;

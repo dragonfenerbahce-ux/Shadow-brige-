@@ -36,6 +36,12 @@ describe("computeShadows", () => {
     expect(shadedCells(computeShadows(oneBlock(1), 225))).toEqual(["3,2", "2,3", "3,3"]);
   });
 
+  it("cannot shade a light stone or the cells beside it", () => {
+    const level = { ...oneBlock(2), lights: [{ x: 1, y: 3 }] };
+    // Without the stone the shadow would cover 0,2 and 1,2; 1,2 sits beside the stone.
+    expect(shadedCells(computeShadows(level, 0))).toEqual(["0,2"]);
+  });
+
   it("never marks the block cell itself", () => {
     const grid = computeShadows(oneBlock(3), 45);
     expect(grid[2][2]).toBe(false);

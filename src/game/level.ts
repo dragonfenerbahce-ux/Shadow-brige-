@@ -19,6 +19,10 @@ export interface Level {
   sunAngle: number;
   /** Number of directions the sun snaps to (8 = every 45 degrees). */
   directions: number;
+  /** Light stones: always lit, and they light the four cells beside them, so those cells can never be shaded. */
+  lights?: Cell[];
+  /** Message shown when the level starts, used to introduce a new idea. */
+  hint?: string;
 }
 
 /** Snaps an angle to the nearest of the level's sun directions, in [0, 360). */
@@ -37,4 +41,9 @@ export function isBlock(level: Level, cell: Cell): boolean {
 
 export function inBounds(level: Level, cell: Cell): boolean {
   return cell.x >= 0 && cell.y >= 0 && cell.x < level.size && cell.y < level.size;
+}
+
+/** True for a light stone and the four cells beside it. */
+export function litByStone(level: Level, cell: Cell): boolean {
+  return (level.lights ?? []).some((l) => Math.abs(l.x - cell.x) + Math.abs(l.y - cell.y) <= 1);
 }

@@ -65,7 +65,7 @@ describe("nextStep", () => {
 });
 
 /** Fewest one-notch sun turns after Go, per level. */
-const EXPECTED_TURNS = [2, 3, 4, 5, 6, 9, 6, 7, 8, 9];
+const EXPECTED_TURNS = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 3, 3, 4, 4, 5, 5, 6, 7, 5, 5, 5, 5, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 2, 2, 3, 6, 10, 10];
 
 describe.each(LEVELS.map((level, i) => [level.id, level, EXPECTED_TURNS[i]] as const))("level %i", (_id, level, turns) => {
   it("cannot be solved with one sun angle", () => {
@@ -82,6 +82,14 @@ describe.each(LEVELS.map((level, i) => [level.id, level, EXPECTED_TURNS[i]] as c
 
   it("starts with the sun on one of its directions", () => {
     expect(snapAngle(level, level.sunAngle)).toBe(level.sunAngle);
+  });
+});
+
+describe.each(LEVELS.filter((l) => l.lights).map((l) => [l.id, l] as const))("light stones in level %i", (_id, level) => {
+  it("make the level harder than without them", () => {
+    const plain = { ...level, lights: undefined };
+    const plainTurns = solvableWithOneAngle(plain) ? 0 : minTurns(plain);
+    expect(plainTurns === null || plainTurns < minTurns(level)!).toBe(true);
   });
 });
 

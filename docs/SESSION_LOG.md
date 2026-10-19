@@ -2,6 +2,11 @@
 
 Latest 5 entries only. Older entries are summarized at the bottom.
 
+## 2026-10-19: 40 levels and light stones
+- Done: Generated 40 levels in difficulty tiers with the solver (turns 1-10, 7x7 and 9x9, 8 and 16 directions). Added light stones (src/game/level.ts `lights`, never shaded, light their 4 neighbours) from level 35 with an intro hint. Fixed a crash when opening a level of a different board size from level select (also in the published 10-level build). 186 tests pass; levels 1, 2, 21, 35, 38 played through in headless Chromium; all 40 levels opened from level select in both orders without errors.
+- Next step: Product Owner plays on iPhone, especially levels 1-10 (should be quick) and 35+ (light stones). Then: result overlay or next mechanic.
+- Struggled with: Level select bug was missed because earlier browser tests only used the Next button; now the test opens every level from the grid.
+
 ## 2026-10-19: 10 levels, level select, saved progress
 - Done: Moved levels to src/game/levels.ts and grew to 10 (turns needed: 2,3,4,5,6,9 on 7x7; 6,7,8,9 on 9x9). Added level select screen and saved progress (src/progress.ts, browser storage, levels unlock in order). 59 tests pass; all 10 levels played through in headless Chromium; progress survived a reload. Test page republished.
 - Next step: Product Owner plays the 10 levels on iPhone. Then decide the first new mechanic ("light stone" tile proposed instead of a bomb).
@@ -22,7 +27,7 @@ Latest 5 entries only. Older entries are summarized at the bottom.
 - Next step: Product Owner plays levels 2-3 on iPhone and says if difficulty feels right. Then: level select screen with saved progress.
 - Struggled with: Nothing new. Still open: approval of "start and exit are safe tiles" rule and English UI text.
 
-## 2026-10-19: Setup, app choice, stack, first screen
-- Done: Project docs and permissions; chose Shadowbridge core prototype; approved TypeScript + Vite + Canvas + Vitest; built the game screen for level 1 (sun drag, shadows, Go, win/melt). 14 unit tests pass; checked in headless Chromium at iPhone 13 size (melt, drag, win, restart).
-- Next step: Product Owner tests level 1 on iPhone Safari and reports how the sun drag and shadows feel. Then: levels 2-3 and result overlay.
-- Struggled with: First walk animation froze (negative time on first frame); fixed by clamping. First `npm install` attempt was blocked by the auto-mode classifier; pinned versions in package.json worked.
+## Older entries (summary)
+- 2026-10-18/19: Project setup (CLAUDE.md, docs, permissions, Git/GitHub); chose Shadowbridge core prototype over simpler apps.
+- Approved stack: TypeScript + Vite + Canvas 2D + Vitest; Product Owner tests via a private claude.ai test page.
+- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule.

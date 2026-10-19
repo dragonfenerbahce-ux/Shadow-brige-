@@ -76,7 +76,7 @@ function restart() {
   moves = 0;
   pip = { ...level.start, scale: 1 };
   phase = "idle";
-  setMessage(HINT);
+  setMessage(level.hint ?? HINT);
   updateHud();
   render();
 }
@@ -85,7 +85,10 @@ function loadLevel(index: number) {
   levelIndex = index;
   level = LEVELS[index];
   toExit = exitDistances(level);
-  layout = computeLayout(canvas.clientWidth, level);
+  // The new level may have a different board size, so shadows must match it before anything draws.
+  sunAngle = level.sunAngle;
+  shadow = computeShadows(level, sunAngle);
+  resize();
   restart();
 }
 
@@ -121,11 +124,7 @@ function showSelect() {
 function showPlay(index: number) {
   selectScreen.hidden = true;
   playScreen.hidden = false;
-  levelIndex = index;
-  level = LEVELS[index];
-  toExit = exitDistances(level);
-  resize();
-  restart();
+  loadLevel(index);
 }
 
 // --- Sun dragging (allowed before Go and while Pip walks) --------------------
