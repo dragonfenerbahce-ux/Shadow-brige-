@@ -26,3 +26,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Free, testable on iPhone via Safari over Wi-Fi, and Claude can run tests and the app in its own environment.
 - Alternative considered: Unity 6 (3D URP), developed and tested only on the Mac.
 - Trade-off: Code will not carry over to Unity; iPhone Safari touch handling needs extra care.
+
+### 2026-10-19: Game UI text is in English
+- Decision: All in-game text (buttons, messages) is English.
+- Reason: Shadowbridge targets an international audience.
+- Alternative considered: Turkish UI text.
+- Trade-off: Turkish friends testing the prototype read English labels.
