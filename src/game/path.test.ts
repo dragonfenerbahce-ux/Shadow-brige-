@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { findPath, resolveWalk } from "./path";
 import { computeShadows } from "./shadows";
-import { LEVEL_1, type Level } from "./level";
+import { LEVELS, type Level } from "./level";
 
 const corridor: Level = {
   id: 0,
@@ -48,19 +48,23 @@ describe("resolveWalk", () => {
   });
 });
 
-describe("LEVEL_1", () => {
-  const winsAt = (angle: number) => resolveWalk(LEVEL_1, computeShadows(LEVEL_1, angle)).outcome === "win";
+describe.each(LEVELS.map((level) => [level.id, level] as const))("level %i", (_id, level) => {
+  const winsAt = (angle: number) => resolveWalk(level, computeShadows(level, angle)).outcome === "win";
+  const winningAngles = Array.from({ length: 360 }, (_, a) => a).filter(winsAt);
 
   it("is not solved at the starting sun angle", () => {
-    expect(winsAt(LEVEL_1.sunAngle)).toBe(false);
+    expect(winsAt(level.sunAngle)).toBe(false);
   });
 
   it("is solvable at some sun angle", () => {
-    expect(winsAt(240)).toBe(true);
+    expect(winningAngles.length).toBeGreaterThan(0);
   });
 
   it("is not trivial: most sun angles fail", () => {
-    const wins = Array.from({ length: 360 }, (_, a) => a).filter(winsAt).length;
-    expect(wins).toBeLessThan(120);
+    expect(winningAngles.length).toBeLessThan(120);
+  });
+
+  it("never leaves Pip stuck behind blocks", () => {
+    expect(resolveWalk(level, computeShadows(level, level.sunAngle)).outcome).not.toBe("stuck");
   });
 });

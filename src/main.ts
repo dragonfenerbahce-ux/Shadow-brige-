@@ -1,4 +1,4 @@
-import { LEVEL_1, type Cell } from "./game/level";
+import { LEVELS, type Cell } from "./game/level";
 import { computeShadows } from "./game/shadows";
 import { resolveWalk, type WalkResult } from "./game/path";
 import { computeLayout, draw, sunPosition, type Layout, type PipState } from "./render";
@@ -7,14 +7,17 @@ const WALK_CELLS_PER_SEC = 4;
 const MELT_SECONDS = 0.7;
 const MIN_MOVE_DEGREES = 1;
 
-const level = LEVEL_1;
+let levelIndex = 0;
+let level = LEVELS[levelIndex];
 
 const canvas = document.querySelector<HTMLCanvasElement>("#board")!;
 const ctx = canvas.getContext("2d")!;
+const levelEl = document.querySelector<HTMLSpanElement>("#level-label")!;
 const movesEl = document.querySelector<HTMLSpanElement>("#moves")!;
 const messageEl = document.querySelector<HTMLParagraphElement>("#message")!;
 const goBtn = document.querySelector<HTMLButtonElement>("#go")!;
 const restartBtn = document.querySelector<HTMLButtonElement>("#restart")!;
+const nextBtn = document.querySelector<HTMLButtonElement>("#next")!;
 
 type Phase = "idle" | "walking" | "won" | "melted";
 
@@ -47,8 +50,12 @@ function setMessage(text: string) {
 }
 
 function updateHud() {
+  levelEl.textContent = `Level ${level.id} of ${LEVELS.length}`;
   movesEl.textContent = `Moves: ${moves}`;
   goBtn.disabled = phase !== "idle";
+  const showNext = phase === "won" && levelIndex < LEVELS.length - 1;
+  nextBtn.hidden = !showNext;
+  goBtn.hidden = showNext;
 }
 
 function resetPip() {
@@ -65,6 +72,13 @@ function restart() {
   setMessage("Drag the sun to move the shadows.");
   updateHud();
   render();
+}
+
+function loadLevel(index: number) {
+  levelIndex = index;
+  level = LEVELS[index];
+  layout = computeLayout(canvas.clientWidth, level);
+  restart();
 }
 
 // --- Sun dragging -----------------------------------------------------------
@@ -157,7 +171,8 @@ function animateWalk(result: WalkResult) {
     }
     if (result.outcome === "win") {
       phase = "won";
-      setMessage(`Pip made it! Moves: ${moves}`);
+      const last = levelIndex === LEVELS.length - 1;
+      setMessage(last ? `Pip made it! All levels done. Moves: ${moves}` : `Pip made it! Moves: ${moves}`);
     } else {
       phase = "melted";
       setMessage(
@@ -175,6 +190,7 @@ goBtn.addEventListener("click", () => {
 });
 
 restartBtn.addEventListener("click", restart);
+nextBtn.addEventListener("click", () => loadLevel(levelIndex + 1));
 window.addEventListener("resize", resize);
 
 resize();

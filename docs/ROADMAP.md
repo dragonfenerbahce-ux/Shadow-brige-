@@ -5,12 +5,14 @@
 - [x] Choose first app: Shadowbridge core prototype
 - [x] Approve tech stack
 - [x] Screen 1: Game screen with level 1 (board, shadows, sun drag, Go, win/lose), verified in Chromium at iPhone size
+- [x] iPhone test of level 1 by Product Owner (smooth, solvable)
+- [x] Levels 2-3 and Next level button
 
 ## Now
-- [ ] iPhone test of level 1 by Product Owner
+- [ ] iPhone test of levels 2-3 by Product Owner
 
 ## Next
-- [ ] Levels 2-3 and result overlay (Retry / Next / Levels)
+- [ ] Result overlay (Retry / Next / Levels)
 - [ ] Level select screen with saved progress
 - [ ] iPhone playtest with a friend: is it fun?
 
