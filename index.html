@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#3B2A5C" />
+    <title>Shadowbridge</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="game">
+      <header class="hud">
+        <span id="level-label">Level 1</span>
+        <span id="moves">Moves: 0</span>
+      </header>
+      <canvas id="board" aria-label="Game board"></canvas>
+      <p id="message" class="message" role="status">Drag the sun to move the shadows.</p>
+      <footer class="controls">
+        <button id="restart" class="btn btn-secondary" type="button">Restart</button>
+        <button id="go" class="btn btn-primary" type="button">Go</button>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

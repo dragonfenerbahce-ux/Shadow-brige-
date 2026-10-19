@@ -4,9 +4,10 @@
 - [x] Project setup (docs, .gitignore, permissions, Git, GitHub)
 - [x] Choose first app: Shadowbridge core prototype
 - [x] Approve tech stack
+- [x] Screen 1: Game screen with level 1 (board, shadows, sun drag, Go, win/lose), verified in Chromium at iPhone size
 
 ## Now
-- [ ] Screen 1: Game screen with level 1 (board, shadows, sun drag, Go, win/lose)
+- [ ] iPhone test of level 1 by Product Owner
 
 ## Next
 - [ ] Levels 2-3 and result overlay (Retry / Next / Levels)

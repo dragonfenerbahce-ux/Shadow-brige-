@@ -1,0 +1,88 @@
+:root {
+  --coral: #ff8a65;
+  --sun: #ffc857;
+  --plum: #3b2a5c;
+  --lavender: #8e7cc3;
+  --cream: #fff4e0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overscroll-behavior: none;
+  background: linear-gradient(180deg, #ffb38a 0%, #c98bb0 55%, var(--plum) 100%);
+  color: var(--cream);
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  min-height: 100%;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#board {
+  width: 100%;
+  aspect-ratio: 1;
+  touch-action: none;
+}
+
+.message {
+  min-height: 1.5em;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 16px;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgb(59 42 92 / 30%);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background: var(--coral);
+  color: var(--cream);
+}
+
+.btn-secondary {
+  background: var(--cream);
+  color: var(--plum);
+}
