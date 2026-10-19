@@ -32,3 +32,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Shadowbridge targets an international audience.
 - Alternative considered: Turkish UI text.
 - Trade-off: Turkish friends testing the prototype read English labels.
+
+### 2026-10-19: Pip walks live while the player turns the sun
+- Decision: After Go, Pip walks step by step as far as the current shadow allows and waits otherwise; the player keeps turning the sun during the walk. Pip melts if its own cell becomes lit. Start and exit are safe tiles.
+- Reason: Playtest showed the one-angle rule was too easy: sweeping the sun always revealed the answer.
+- Alternative considered: Keep the one-angle rule and make harder levels with narrower solution windows.
+- Trade-off: Bigger rewrite of game logic and levels; turning the sun while protecting Pip needs some finger skill.

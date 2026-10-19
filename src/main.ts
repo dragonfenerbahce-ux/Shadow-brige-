@@ -1,14 +1,16 @@
-import { LEVELS, type Cell } from "./game/level";
+import { LEVELS, sameCell, type Cell } from "./game/level";
 import { computeShadows } from "./game/shadows";
-import { resolveWalk, type WalkResult } from "./game/path";
+import { exitDistances, isSafe, nextStep } from "./game/path";
 import { computeLayout, draw, sunPosition, type Layout, type PipState } from "./render";
 
-const WALK_CELLS_PER_SEC = 4;
+const STEP_MS = 320;
 const MELT_SECONDS = 0.7;
 const MIN_MOVE_DEGREES = 1;
+const HINT = "Set the sun, press Go, and keep turning it while Pip walks.";
 
 let levelIndex = 0;
 let level = LEVELS[levelIndex];
+let toExit = exitDistances(level);
 
 const canvas = document.querySelector<HTMLCanvasElement>("#board")!;
 const ctx = canvas.getContext("2d")!;
@@ -19,7 +21,7 @@ const goBtn = document.querySelector<HTMLButtonElement>("#go")!;
 const restartBtn = document.querySelector<HTMLButtonElement>("#restart")!;
 const nextBtn = document.querySelector<HTMLButtonElement>("#next")!;
 
-type Phase = "idle" | "walking" | "won" | "melted";
+type Phase = "idle" | "walking" | "melting" | "won" | "melted";
 
 let layout: Layout;
 let sunAngle = level.sunAngle;
@@ -28,8 +30,8 @@ let moves = 0;
 let phase: Phase = "idle";
 let pip: PipState = { ...level.start, scale: 1 };
 let dragStartAngle: number | null = null;
-/** Bumped on restart so an old walk animation stops. */
-let walkId = 0;
+/** Bumped on restart so an old animation loop stops. */
+let loopId = 0;
 
 function render() {
   draw(ctx, layout, level, shadow, sunAngle, pip);
@@ -58,18 +60,14 @@ function updateHud() {
   goBtn.hidden = showNext;
 }
 
-function resetPip() {
-  pip = { ...level.start, scale: 1 };
-  phase = "idle";
-}
-
 function restart() {
-  walkId++;
+  loopId++;
   sunAngle = level.sunAngle;
   shadow = computeShadows(level, sunAngle);
   moves = 0;
-  resetPip();
-  setMessage("Drag the sun to move the shadows.");
+  pip = { ...level.start, scale: 1 };
+  phase = "idle";
+  setMessage(HINT);
   updateHud();
   render();
 }
@@ -77,11 +75,12 @@ function restart() {
 function loadLevel(index: number) {
   levelIndex = index;
   level = LEVELS[index];
+  toExit = exitDistances(level);
   layout = computeLayout(canvas.clientWidth, level);
   restart();
 }
 
-// --- Sun dragging -----------------------------------------------------------
+// --- Sun dragging (allowed before Go and while Pip walks) --------------------
 
 function pointerPos(e: PointerEvent) {
   const rect = canvas.getBoundingClientRect();
@@ -106,27 +105,24 @@ function angleDiff(a: number, b: number): number {
   return d > 180 ? 360 - d : d;
 }
 
+function setSun(angle: number) {
+  sunAngle = angle;
+  shadow = computeShadows(level, sunAngle);
+  if (phase !== "walking") render();
+}
+
 canvas.addEventListener("pointerdown", (e) => {
-  if (phase === "walking" || phase === "won") return;
+  if (phase !== "idle" && phase !== "walking") return;
   const p = pointerPos(e);
   if (!canGrab(p)) return;
-  if (phase === "melted") {
-    resetPip();
-    setMessage("Drag the sun to move the shadows.");
-  }
   canvas.setPointerCapture(e.pointerId);
   dragStartAngle = sunAngle;
-  sunAngle = angleAt(p);
-  shadow = computeShadows(level, sunAngle);
-  updateHud();
-  render();
+  setSun(angleAt(p));
 });
 
 canvas.addEventListener("pointermove", (e) => {
   if (dragStartAngle === null) return;
-  sunAngle = angleAt(pointerPos(e));
-  shadow = computeShadows(level, sunAngle);
-  render();
+  setSun(angleAt(pointerPos(e)));
 });
 
 function endDrag() {
@@ -139,54 +135,72 @@ function endDrag() {
 canvas.addEventListener("pointerup", endDrag);
 canvas.addEventListener("pointercancel", endDrag);
 
-// --- Pip walking -------------------------------------------------------------
+// --- Pip walking ---------------------------------------------------------------
 
-function animateWalk(result: WalkResult) {
+function startWalk() {
   phase = "walking";
+  setMessage("Keep Pip in the shadow!");
   updateHud();
-  const path: Cell[] = result.path;
-  const walkTime = (path.length - 1) / WALK_CELLS_PER_SEC;
-  const start = performance.now();
-  const id = walkId;
+
+  const id = ++loopId;
+  let from: Cell = level.start;
+  let to: Cell | null = null;
+  let stepStart = 0;
+  let meltStart = 0;
 
   function frame(now: number) {
-    if (id !== walkId) return;
-    const t = Math.max(0, (now - start) / 1000);
-    const steps = Math.min(t * WALK_CELLS_PER_SEC, path.length - 1);
-    const i = Math.floor(steps);
-    const f = steps - i;
-    const a = path[i];
-    const b = path[Math.min(i + 1, path.length - 1)];
-    pip = { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f, scale: 1 };
+    if (id !== loopId) return;
 
-    if (t >= walkTime && result.outcome !== "win") {
-      pip.scale = Math.max(0, 1 - (t - walkTime) / MELT_SECONDS);
+    if (phase === "walking") {
+      if (!to) {
+        to = nextStep(level, shadow, from, toExit);
+        stepStart = now;
+      }
+      let f = 0;
+      if (to) {
+        f = Math.min(1, Math.max(0, (now - stepStart) / STEP_MS));
+        if (f >= 1) {
+          from = to;
+          to = null;
+          f = 0;
+        }
+      }
+      const target = to ?? from;
+      pip = { x: from.x + (target.x - from.x) * f, y: from.y + (target.y - from.y) * f, scale: 1 };
+
+      if (sameCell(from, level.exit) && !to) {
+        phase = "won";
+        const last = levelIndex === LEVELS.length - 1;
+        setMessage(last ? `Pip made it! All levels done. Moves: ${moves}` : `Pip made it! Moves: ${moves}`);
+        updateHud();
+      } else {
+        // Pip counts as standing on whichever cell holds most of its body.
+        const standing = to && f >= 0.5 ? to : from;
+        if (!isSafe(level, shadow, standing)) {
+          phase = "melting";
+          meltStart = now;
+          dragStartAngle = null;
+          setMessage("Pip melted in the light.");
+          updateHud();
+        }
+      }
+    } else if (phase === "melting") {
+      pip.scale = Math.max(0, 1 - (now - meltStart) / 1000 / MELT_SECONDS);
+      if (pip.scale === 0) {
+        phase = "melted";
+        setMessage("Pip melted in the light. Press Restart to try again.");
+        updateHud();
+      }
     }
+
     render();
-
-    const done = result.outcome === "win" ? t >= walkTime : t >= walkTime + MELT_SECONDS;
-    if (!done) {
-      requestAnimationFrame(frame);
-      return;
-    }
-    if (result.outcome === "win") {
-      phase = "won";
-      const last = levelIndex === LEVELS.length - 1;
-      setMessage(last ? `Pip made it! All levels done. Moves: ${moves}` : `Pip made it! Moves: ${moves}`);
-    } else {
-      phase = "melted";
-      setMessage(
-        result.outcome === "melt" ? "Pip melted in the light. Drag the sun and try again." : "No way through.",
-      );
-    }
-    updateHud();
+    if (phase === "walking" || phase === "melting") requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
 
 goBtn.addEventListener("click", () => {
-  if (phase !== "idle") return;
-  animateWalk(resolveWalk(level, shadow));
+  if (phase === "idle") startWalk();
 });
 
 restartBtn.addEventListener("click", restart);
@@ -194,4 +208,5 @@ nextBtn.addEventListener("click", () => loadLevel(levelIndex + 1));
 window.addEventListener("resize", resize);
 
 resize();
+setMessage(HINT);
 updateHud();
