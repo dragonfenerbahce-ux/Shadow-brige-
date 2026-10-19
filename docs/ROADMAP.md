@@ -1,12 +1,18 @@
 # Roadmap
 
+## Done
+- [x] Project setup (docs, .gitignore, permissions, Git, GitHub)
+- [x] Choose first app: Shadowbridge core prototype
+- [x] Approve tech stack
+
 ## Now
-- [ ] Project setup (docs, .gitignore, permissions, Git)
-- [ ] Choose first app
-- [ ] Approve tech stack
+- [ ] Screen 1: Game screen with level 1 (board, shadows, sun drag, Go, win/lose)
 
 ## Next
-- [ ] First screen: TBD
+- [ ] Levels 2-3 and result overlay (Retry / Next / Levels)
+- [ ] Level select screen with saved progress
+- [ ] iPhone playtest with a friend: is it fun?
 
 ## Later
-- TBD
+- Decide next step for full Shadowbridge (Unity or keep web) based on playtest
+- Repo: make private (owner action)
