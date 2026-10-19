@@ -2,12 +2,10 @@ import { type Cell, type Level, sameCell } from "./level";
 import { computeShadows } from "./shadows";
 import { exitDistances, isSafe, walkUntilStop } from "./path";
 
-/** Sun angle resolution used for level checks, in degrees. */
-export const ANGLE_STEP = 1;
-const ANGLES = 360 / ANGLE_STEP;
-
+/** Shadows for each of the level's sun directions, indexed by direction. */
 function shadowTable(level: Level): boolean[][][] {
-  return Array.from({ length: ANGLES }, (_, i) => computeShadows(level, i * ANGLE_STEP));
+  const step = 360 / level.directions;
+  return Array.from({ length: level.directions }, (_, i) => computeShadows(level, i * step));
 }
 
 /** True when Pip reaches the exit at one fixed sun angle, with no sun changes after Go. */
@@ -17,41 +15,33 @@ export function solvableWithOneAngle(level: Level): boolean {
 }
 
 /**
- * Minimum number of sun "phases" needed to win, or null if unsolvable.
- * A phase = let Pip walk until it stops. Between phases the sun turns step by step,
- * and Pip's cell must stay safe at every angle it passes through.
+ * Minimum number of one-notch sun turns needed after Go, or null if unsolvable.
+ * Models a careful player: after every notch Pip walks until it stops, and the
+ * cell Pip stands on must still be safe at the next notch.
  */
-export function minPhases(level: Level): number | null {
+export function minTurns(level: Level): number | null {
   const toExit = exitDistances(level);
   const shadows = shadowTable(level);
-  const key = (c: Cell, a: number) => (c.y * level.size + c.x) * ANGLES + a;
+  const count = level.directions;
+  const key = (c: Cell, a: number) => (c.y * level.size + c.x) * count + a;
 
-  // Before Go, Pip is on the safe start tile, so any angle can be chosen.
-  let frontier = new Map<number, { cell: Cell; angle: number }>();
-  for (let a = 0; a < ANGLES; a++) frontier.set(key(level.start, a), { cell: level.start, angle: a });
-  const seen = new Set<number>(frontier.keys());
+  // Before Go, Pip is on the safe start tile, so any direction can be chosen.
+  let frontier: { cell: Cell; dir: number }[] = [];
+  const seen = new Set<number>();
+  for (let d = 0; d < count; d++) {
+    frontier.push({ cell: level.start, dir: d });
+    seen.add(key(level.start, d));
+  }
 
-  for (let phase = 1; phase <= 6 && frontier.size > 0; phase++) {
-    // Walk phase.
-    const stops: { cell: Cell; angle: number }[] = [];
-    for (const { cell, angle } of frontier.values()) {
-      const end = walkUntilStop(level, shadows[angle], cell, toExit).at(-1)!;
-      if (sameCell(end, level.exit)) return phase;
-      stops.push({ cell: end, angle });
-    }
-    // Turn phase: every angle reachable by turning while Pip's cell stays safe.
-    const next = new Map<number, { cell: Cell; angle: number }>();
-    for (const stop of stops) {
-      for (const dir of [1, -1]) {
-        for (let i = 1; i < ANGLES; i++) {
-          const a = (stop.angle + dir * i + ANGLES) % ANGLES;
-          if (!isSafe(level, shadows[a], stop.cell)) break;
-          const k = key(stop.cell, a);
-          if (!seen.has(k)) {
-            seen.add(k);
-            next.set(k, { cell: stop.cell, angle: a });
-          }
-        }
+  for (let turns = 0; frontier.length > 0 && turns <= count * 4; turns++) {
+    const next: { cell: Cell; dir: number }[] = [];
+    for (const { cell, dir } of frontier) {
+      const end = walkUntilStop(level, shadows[dir], cell, toExit).at(-1)!;
+      if (sameCell(end, level.exit)) return turns;
+      for (const d of [(dir + 1) % count, (dir - 1 + count) % count]) {
+        if (!isSafe(level, shadows[d], end) || seen.has(key(end, d))) continue;
+        seen.add(key(end, d));
+        next.push({ cell: end, dir: d });
       }
     }
     frontier = next;

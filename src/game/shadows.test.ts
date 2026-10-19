@@ -9,6 +9,7 @@ const oneBlock = (h: number): Level => ({
   start: { x: 0, y: 0 },
   exit: { x: 4, y: 4 },
   sunAngle: 0,
+  directions: 8,
 });
 
 function shadedCells(grid: boolean[][]): string[] {

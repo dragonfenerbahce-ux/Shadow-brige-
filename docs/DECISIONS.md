@@ -38,3 +38,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Playtest showed the one-angle rule was too easy: sweeping the sun always revealed the answer.
 - Alternative considered: Keep the one-angle rule and make harder levels with narrower solution windows.
 - Trade-off: Bigger rewrite of game logic and levels; turning the sun while protecting Pip needs some finger skill.
+
+### 2026-10-19: Sun snaps to fixed directions (8 early, 16 later)
+- Decision: The sun snaps to 8 directions in early levels; later levels use more (level 3: 16). Stops are shown as dots on the sun ring.
+- Reason: Playtest said shadows felt inconsistent and levels were too hard; free angles made shadows jump between cells and needed degree-level precision.
+- Alternative considered: Keep free angles and draw the real shadow shape as a soft area.
+- Trade-off: Less smooth, "magical" sun movement; fewer distinct level ideas per board.

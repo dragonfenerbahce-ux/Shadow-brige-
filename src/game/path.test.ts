@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { exitDistances, isSafe, nextStep, walkUntilStop } from "./path";
-import { minPhases, solvableWithOneAngle } from "./solver";
-import { LEVELS, type Level } from "./level";
+import { minTurns, solvableWithOneAngle } from "./solver";
+import { LEVELS, snapAngle, type Level } from "./level";
 
 // A 5x1 corridor: start on the left, exit on the right.
 const corridor: Level = {
@@ -11,6 +11,7 @@ const corridor: Level = {
   start: { x: 0, y: 0 },
   exit: { x: 4, y: 0 },
   sunAngle: 0,
+  directions: 8,
 };
 
 /** Builds a shadow grid for `level` from the x positions shaded in each row. */
@@ -62,16 +63,31 @@ describe("nextStep", () => {
   });
 });
 
-describe.each(LEVELS.map((level) => [level.id, level] as const))("level %i", (id, level) => {
+/** Fewest one-notch sun turns after Go, per level. */
+const EXPECTED_TURNS = [2, 3, 5];
+
+describe.each(LEVELS.map((level, i) => [level.id, level, EXPECTED_TURNS[i]] as const))("level %i", (_id, level, turns) => {
   it("cannot be solved with one sun angle", () => {
     expect(solvableWithOneAngle(level)).toBe(false);
   });
 
   it("is solvable by turning the sun while Pip walks", () => {
-    expect(minPhases(level)).not.toBeNull();
+    expect(minTurns(level)).not.toBeNull();
   });
 
-  it("gets harder with each level", () => {
-    expect(minPhases(level)).toBe(id + 1);
+  it("needs the planned number of sun turns", () => {
+    expect(minTurns(level)).toBe(turns);
+  });
+
+  it("starts with the sun on one of its directions", () => {
+    expect(snapAngle(level, level.sunAngle)).toBe(level.sunAngle);
+  });
+});
+
+describe("snapAngle", () => {
+  it("snaps to the nearest direction", () => {
+    expect(snapAngle(corridor, 50)).toBe(45);
+    expect(snapAngle(corridor, 350)).toBe(0);
+    expect(snapAngle({ ...corridor, directions: 16 }, 30)).toBe(22.5);
   });
 });

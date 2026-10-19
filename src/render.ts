@@ -21,7 +21,8 @@ export interface Layout {
 }
 
 export function computeLayout(size: number, level: Level): Layout {
-  const board = size * 0.72;
+  // The sun orbit must clear the board corners, so the board takes 60% of the canvas.
+  const board = size * 0.6;
   const cell = board / level.size;
   const origin = (size - board) / 2;
   return {
@@ -30,8 +31,8 @@ export function computeLayout(size: number, level: Level): Layout {
     originX: origin,
     originY: origin,
     center: size / 2,
-    sunOrbit: board / 2 + (size - board) / 4,
-    sunRadius: Math.max(14, cell * 0.4),
+    sunOrbit: (board / 2) * Math.SQRT2 + size * 0.04,
+    sunRadius: Math.max(12, cell * 0.38),
   };
 }
 
@@ -75,6 +76,15 @@ export function draw(
   ctx.arc(layout.center, layout.center, layout.sunOrbit, 0, Math.PI * 2);
   ctx.stroke();
   ctx.setLineDash([]);
+
+  // Sun stops: one dot per direction the sun can snap to.
+  ctx.fillStyle = "rgba(255, 244, 224, 0.7)";
+  for (let i = 0; i < level.directions; i++) {
+    const stop = sunPosition(layout, (i * 360) / level.directions);
+    ctx.beginPath();
+    ctx.arc(stop.x, stop.y, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   // Board base.
   ctx.fillStyle = COLORS.cream;

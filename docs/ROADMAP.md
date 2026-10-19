@@ -8,9 +8,10 @@
 - [x] iPhone test of level 1 by Product Owner (smooth, solvable)
 - [x] Levels 2-3 and Next level button
 - [x] Live-walk rule (turn sun while Pip walks) with 3 harder levels
+- [x] Sun snaps to 8/16 directions; easier, predictable levels
 
 ## Now
-- [ ] iPhone test of the live-walk levels by Product Owner
+- [ ] iPhone test of snapped-sun levels by Product Owner
 
 ## Next
 - [ ] Result overlay (Retry / Next / Levels)

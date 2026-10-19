@@ -15,7 +15,7 @@ Test whether the core mechanic is fun: the player drags the sun, block shadows m
 
 ## Game rules
 - Board is a grid. Each cell is floor or a block with a height (1-3).
-- Sun has a direction (dragged around the board) and a fixed elevation. A block casts shadow on the floor cells behind it, as many cells as its height.
+- Sun has a direction (dragged around the board) and a fixed elevation. The sun snaps to fixed directions: 8 in early levels, more (16) in later levels. A block casts shadow on the floor cells behind it, as many cells as its height.
 - Start and exit are safe tiles: Pip never melts on them.
 - A move = one sun drag (finger down to finger up). The sun can be dragged before Go and while Pip walks.
 - After Go, Pip walks step by step through shadow toward the shadowed cell closest to the exit. With no shadow to move into, Pip waits.
@@ -28,7 +28,7 @@ Per level: completed (yes/no) and best move count. Stored in the browser on the 
 
 ## Acceptance criteria
 - Playable on iPhone Safari with one finger; shadows follow the drag without visible lag.
-- All 3 levels are solvable, none with a single sun angle, and each needs more sun turns than the one before.
+- All 3 levels are solvable, none with a single sun direction; levels 1-2 use 8 directions, level 3 uses 16.
 - Progress survives closing and reopening the page.
 - Game logic (shadows, path finding, win/lose) is covered by automated tests.
 

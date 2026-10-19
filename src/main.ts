@@ -1,11 +1,10 @@
-import { LEVELS, sameCell, type Cell } from "./game/level";
+import { LEVELS, sameCell, snapAngle, type Cell } from "./game/level";
 import { computeShadows } from "./game/shadows";
 import { exitDistances, isSafe, nextStep } from "./game/path";
 import { computeLayout, draw, sunPosition, type Layout, type PipState } from "./render";
 
-const STEP_MS = 320;
+const STEP_MS = 420;
 const MELT_SECONDS = 0.7;
-const MIN_MOVE_DEGREES = 1;
 const HINT = "Set the sun, press Go, and keep turning it while Pip walks.";
 
 let levelIndex = 0;
@@ -100,12 +99,9 @@ function canGrab(p: { x: number; y: number }): boolean {
   return p.x < layout.originX || p.y < layout.originY || p.x > end || p.y > end;
 }
 
-function angleDiff(a: number, b: number): number {
-  const d = Math.abs(a - b) % 360;
-  return d > 180 ? 360 - d : d;
-}
-
 function setSun(angle: number) {
+  angle = snapAngle(level, angle);
+  if (angle === sunAngle) return;
   sunAngle = angle;
   shadow = computeShadows(level, sunAngle);
   if (phase !== "walking") render();
@@ -127,7 +123,7 @@ canvas.addEventListener("pointermove", (e) => {
 
 function endDrag() {
   if (dragStartAngle === null) return;
-  if (angleDiff(dragStartAngle, sunAngle) >= MIN_MOVE_DEGREES) moves++;
+  if (dragStartAngle !== sunAngle) moves++;
   dragStartAngle = null;
   updateHud();
 }
