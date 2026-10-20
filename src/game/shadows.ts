@@ -15,7 +15,7 @@ function axisRange(offset: number, dir: number): [number, number] | null {
 
 /**
  * Returns shadow[y][x] = true for floor cells in shadow.
- * Each block's square is swept away from the sun for `h` cells; a floor cell is
+ * Each block's square is swept away from the sun to the board edge; a floor cell is
  * in shadow when its center lies inside that swept square. Cells lit by a light
  * stone are never in shadow.
  */
@@ -34,7 +34,7 @@ export function computeShadows(level: Level, sunAngleDeg: number): boolean[][] {
         const ry = axisRange(y - block.y, dy);
         if (!rx || !ry) continue;
         const lo = Math.max(rx[0], ry[0], 0);
-        const hi = Math.min(rx[1], ry[1], block.h);
+        const hi = Math.min(rx[1], ry[1]);
         if (lo <= hi + EPS) grid[y][x] = true;
       }
     }

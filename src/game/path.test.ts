@@ -34,7 +34,7 @@ describe("isSafe", () => {
 
 describe("exitDistances", () => {
   it("counts steps around blocks", () => {
-    const level: Level = { ...corridor, size: 3, blocks: [{ x: 1, y: 0, h: 1 }], exit: { x: 2, y: 0 } };
+    const level: Level = { ...corridor, size: 3, blocks: [{ x: 1, y: 0 }], exit: { x: 2, y: 0 } };
     expect(exitDistances(level)[0][0]).toBe(4);
   });
 });
@@ -66,7 +66,7 @@ describe("nextStep", () => {
 });
 
 /** Fewest one-notch sun turns after Go, per level. */
-const EXPECTED_TURNS = [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 3, 3, 4, 4, 2, 3, 3, 4, 4, 5, 5, 6, 7, 2, 5, 5, 5, 5, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 2, 2, 3, 6, 10, 10];
+const EXPECTED_TURNS = [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 3, 3, 3, 3, 2, 3, 3, 4, 4, 5, 5, 6, 7, 2, 5, 5, 5, 5, 7, 8, 8, 8, 8, 8, 8, 10, 10, 11, 1, 2, 2, 5, 7, 8];
 
 describe.each(LEVELS.map((level, i) => [level.id, level, EXPECTED_TURNS[i]] as const))("level %i", (_id, level, turns) => {
   it(turns === 0 ? "is solved by one sun direction, but not the starting one" : "cannot be solved with one sun angle", () => {

@@ -2,6 +2,11 @@
 
 Latest 5 entries only. Older entries are summarized at the bottom.
 
+## 2026-10-20: Shadows to the board edge, all 48 levels rebuilt
+- Done: Product Owner marked level 18: cells behind a block were lit (shadow length = block height felt wrong). Approved: shadows reach the board edge, heights removed. Regenerated all 48 levels with the same turn curve (0,0,0,1,...,11). 217 tests pass; all 48 levels played through in one headless Chromium run (timed from solver walk lengths); all 48 open from level select.
+- Next step: Product Owner and friend replay on iPhone. Then pick the next feature (result screen, visual polish, or new mechanic).
+- Struggled with: Nothing new; the timed full play-through now makes checking every level practical.
+
 ## 2026-10-20: Beginner-friendly start after a friend's playtest
 - Done: Friend quit at level 3 in 30 s ("too hard", "behind the block but the sun hit me"). Added 0.8 s orange warning in levels 1-10, walk-back when the next cell gets lit, smaller Pip so its cell's shade shows, 3 one-direction tutorial levels, 5 easy breather levels (48 total) and hints on levels 1-4 and 11. 218 tests pass; levels 1-15 played through in headless Chromium; warning saves Pip on level 4 and is off on level 11; all 48 levels open from level select.
 - Next step: Same friend plays again on iPhone; compare how far they get. Then: result overlay or more mechanics.
@@ -22,12 +27,7 @@ Latest 5 entries only. Older entries are summarized at the bottom.
 - Next step: Product Owner plays on iPhone: are shadows predictable now, is difficulty right? Then: level select screen with saved progress.
 - Struggled with: First solver assumed Pip stands still while the sun turns; real play melted Pip on level 3. Fixed by modelling a walk after every notch.
 
-## 2026-10-19: Live-walk rule and new levels
-- Done: Playtest said levels were too easy (one sun angle always solved them). Approved new rule: Pip walks live as far as shadow allows, player turns the sun during the walk, Pip melts if its cell gets lit; start/exit are safe. Rewrote path logic, added a solver (src/game/solver.ts), picked 3 generated levels needing 2, 3 and 4 sun phases. 21 tests pass (checked at 1-degree resolution); all 3 levels played through in headless Chromium using solver plans; wrong turn melts Pip. Test page republished.
-- Next step: Product Owner plays the new levels on iPhone and says if they are fun and hard enough. Then: level select screen with saved progress.
-- Struggled with: Level 1 solution needs only a small (5 degree) turn after the first walk; may feel fiddly. Watch the playtest.
-
 ## Older entries (summary)
 - 2026-10-18/19: Project setup (CLAUDE.md, docs, permissions, Git/GitHub); chose Shadowbridge core prototype over simpler apps.
 - Approved stack: TypeScript + Vite + Canvas 2D + Vitest; Product Owner tests via a private claude.ai test page.
-- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns).
+- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions.

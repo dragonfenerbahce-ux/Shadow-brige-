@@ -135,17 +135,14 @@ export function draw(
   drawTile(ctx, cellX(level.exit.x), cellY(level.exit.y), cell, COLORS.coral, gap);
   drawDoor(ctx, cellX(level.exit.x), cellY(level.exit.y), cell);
 
-  // Blocks: darker = taller, with a height number.
+  // Blocks: a stone with a lighter top face.
   for (const b of level.blocks) {
-    const shade = ["#8E7CC3", "#6A5499", "#4E3B78"][b.h - 1] ?? COLORS.plum;
-    ctx.fillStyle = shade;
+    ctx.fillStyle = COLORS.plum;
     roundRect(ctx, cellX(b.x) + gap, cellY(b.y) + gap, cell - gap * 2, cell - gap * 2, cell * 0.18);
     ctx.fill();
-    ctx.fillStyle = COLORS.cream;
-    ctx.font = `700 ${cell * 0.4}px ui-rounded, system-ui, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(String(b.h), cellX(b.x) + cell / 2, cellY(b.y) + cell / 2);
+    ctx.fillStyle = "#6A5499";
+    roundRect(ctx, cellX(b.x) + gap * 2, cellY(b.y) + gap * 2, cell - gap * 4, cell * 0.62, cell * 0.14);
+    ctx.fill();
   }
 
   const hot = pip.hot ?? 0;

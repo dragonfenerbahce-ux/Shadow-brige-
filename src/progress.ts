@@ -1,8 +1,8 @@
 /** Best (fewest) moves per finished level id. A level is finished when it has an entry. */
 export type Progress = Record<number, number>;
 
-// v3: level ids were renumbered when easy levels were added (48 levels).
-const KEY = "shadowbridge.progress.v3";
+// v4: all levels were rebuilt when shadows started reaching the board edge.
+const KEY = "shadowbridge.progress.v4";
 
 type Store = Pick<Storage, "getItem" | "setItem">;
 

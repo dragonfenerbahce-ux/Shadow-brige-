@@ -14,8 +14,8 @@ Test whether the core mechanic is fun: the player drags the sun, block shadows m
 3. Result overlay: "Pip made it!" or "Pip melted", with Retry / Next / Levels buttons.
 
 ## Game rules
-- Board is a grid. Each cell is floor or a block with a height (1-3).
-- Sun has a direction (dragged around the board) and a fixed elevation. The sun snaps to fixed directions: 8 in early levels, more (16) in later levels. A block casts shadow on the floor cells behind it, as many cells as its height.
+- Board is a grid. Each cell is floor or a stone block.
+- Sun has a direction (dragged around the board) and a fixed elevation. The sun snaps to fixed directions: 8 in early levels, more (16) in later levels. A block blocks the light: every floor cell behind it, up to the board edge, is in shadow.
 - Start and exit are safe tiles: Pip never melts on them.
 - A move = one sun drag (finger down to finger up). The sun can be dragged before Go and while Pip walks.
 - After Go, Pip walks step by step through shadow toward the shadowed cell closest to the exit. With no shadow to move into, Pip waits.

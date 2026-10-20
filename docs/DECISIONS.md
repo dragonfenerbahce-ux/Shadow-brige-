@@ -62,3 +62,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: A friend's first playtest: quit at level 3 after 30 seconds, found it too hard, and felt "I was behind the block but the sun hit me".
 - Alternative considered: Keep instant melting everywhere and only add hints.
 - Trade-off: The warning makes early levels easier to brute-force; progress on phones is reset once; light stones now start at level 43.
+
+### 2026-10-20: Shadows reach the board edge; block heights removed
+- Decision: A block's shadow continues behind it all the way to the board edge. Blocks no longer have heights or numbers. All 48 levels were regenerated with the same difficulty curve; saved progress moved to a new storage key.
+- Reason: Product Owner's playtest (with a marked screenshot of level 18): cells right behind a block were lit, which felt physically wrong; the height numbers were abstract.
+- Alternative considered: Keep heights and draw blocks as 3D pillars so short shadows look natural.
+- Trade-off: Less puzzle variety without heights; boards get darker; progress on phones is reset once.

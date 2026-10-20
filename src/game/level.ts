@@ -3,15 +3,11 @@ export interface Cell {
   y: number;
 }
 
-export interface Block extends Cell {
-  /** Block height in cells (1-3). A block casts this many cells of shadow. */
-  h: number;
-}
-
 export interface Level {
   id: number;
   size: number;
-  blocks: Block[];
+  /** Stone blocks: they cast shadow away from the sun all the way to the board edge. */
+  blocks: Cell[];
   /** Start and exit are safe tiles: Pip does not melt on them. */
   start: Cell;
   exit: Cell;
