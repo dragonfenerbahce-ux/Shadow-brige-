@@ -50,6 +50,8 @@ export interface PipState {
   y: number;
   /** 1 = full size, 0 = fully melted. */
   scale: number;
+  /** 0 = in shadow, up to 1 = glowing orange in the sun just before melting. */
+  hot?: number;
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -146,7 +148,9 @@ export function draw(
     ctx.fillText(String(b.h), cellX(b.x) + cell / 2, cellY(b.y) + cell / 2);
   }
 
-  drawPip(ctx, cellX(pip.x) + cell / 2, cellY(pip.y) + cell / 2, cell, pip.scale);
+  const hot = pip.hot ?? 0;
+  const shake = hot > 0 ? Math.sin(performance.now() / 25) * cell * 0.05 : 0;
+  drawPip(ctx, cellX(pip.x) + cell / 2 + shake, cellY(pip.y) + cell / 2, cell, pip.scale, hot);
 
   // Sun handle.
   const sun = sunPosition(layout, sunAngle);
@@ -179,10 +183,11 @@ function drawDoor(ctx: CanvasRenderingContext2D, x: number, y: number, cell: num
   ctx.fill();
 }
 
-function drawPip(ctx: CanvasRenderingContext2D, cx: number, cy: number, cell: number, scale: number) {
+function drawPip(ctx: CanvasRenderingContext2D, cx: number, cy: number, cell: number, scale: number, hot: number) {
   if (scale <= 0) return;
-  const r = cell * 0.32 * scale;
-  ctx.fillStyle = COLORS.lavender;
+  // Smaller than its cell so the cell's shade stays visible around Pip.
+  const r = cell * 0.26 * scale;
+  ctx.fillStyle = hot > 0 ? COLORS.coral : COLORS.lavender;
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();

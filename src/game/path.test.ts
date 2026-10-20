@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { exitDistances, isSafe, nextStep, walkUntilStop } from "./path";
 import { minTurns, solvableWithOneAngle } from "./solver";
 import { snapAngle, type Level } from "./level";
+import { computeShadows } from "./shadows";
 import { LEVELS } from "./levels";
 
 // A 5x1 corridor: start on the left, exit on the right.
@@ -65,11 +66,13 @@ describe("nextStep", () => {
 });
 
 /** Fewest one-notch sun turns after Go, per level. */
-const EXPECTED_TURNS = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 3, 3, 4, 4, 5, 5, 6, 7, 5, 5, 5, 5, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 2, 2, 3, 6, 10, 10];
+const EXPECTED_TURNS = [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 3, 3, 4, 4, 2, 3, 3, 4, 4, 5, 5, 6, 7, 2, 5, 5, 5, 5, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 2, 2, 3, 6, 10, 10];
 
 describe.each(LEVELS.map((level, i) => [level.id, level, EXPECTED_TURNS[i]] as const))("level %i", (_id, level, turns) => {
-  it("cannot be solved with one sun angle", () => {
-    expect(solvableWithOneAngle(level)).toBe(false);
+  it(turns === 0 ? "is solved by one sun direction, but not the starting one" : "cannot be solved with one sun angle", () => {
+    expect(solvableWithOneAngle(level)).toBe(turns === 0);
+    const atStart = computeShadows(level, level.sunAngle);
+    expect(walkUntilStop(level, atStart, level.start).at(-1)).not.toEqual(level.exit);
   });
 
   it("is solvable by turning the sun while Pip walks", () => {

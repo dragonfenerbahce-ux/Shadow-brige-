@@ -2,6 +2,11 @@
 
 Latest 5 entries only. Older entries are summarized at the bottom.
 
+## 2026-10-20: Beginner-friendly start after a friend's playtest
+- Done: Friend quit at level 3 in 30 s ("too hard", "behind the block but the sun hit me"). Added 0.8 s orange warning in levels 1-10, walk-back when the next cell gets lit, smaller Pip so its cell's shade shows, 3 one-direction tutorial levels, 5 easy breather levels (48 total) and hints on levels 1-4 and 11. 218 tests pass; levels 1-15 played through in headless Chromium; warning saves Pip on level 4 and is off on level 11; all 48 levels open from level select.
+- Next step: Same friend plays again on iPhone; compare how far they get. Then: result overlay or more mechanics.
+- Struggled with: Browser test first waited too short for long walks (level 7), which looked like a bug but was not.
+
 ## 2026-10-19: 40 levels and light stones
 - Done: Generated 40 levels in difficulty tiers with the solver (turns 1-10, 7x7 and 9x9, 8 and 16 directions). Added light stones (src/game/level.ts `lights`, never shaded, light their 4 neighbours) from level 35 with an intro hint. Fixed a crash when opening a level of a different board size from level select (also in the published 10-level build). 186 tests pass; levels 1, 2, 21, 35, 38 played through in headless Chromium; all 40 levels opened from level select in both orders without errors.
 - Next step: Product Owner plays on iPhone, especially levels 1-10 (should be quick) and 35+ (light stones). Then: result overlay or next mechanic.
@@ -22,12 +27,7 @@ Latest 5 entries only. Older entries are summarized at the bottom.
 - Next step: Product Owner plays the new levels on iPhone and says if they are fun and hard enough. Then: level select screen with saved progress.
 - Struggled with: Level 1 solution needs only a small (5 degree) turn after the first walk; may feel fiddly. Watch the playtest.
 
-## 2026-10-19: Levels 2-3 and Next button
-- Done: Product Owner tested level 1 on iPhone (private claude.ai test page): smooth drag, solved it, asked for more levels. Added levels 2 and 3 (picked from generated candidates with narrow solution windows) and a Next level button. 23 unit tests pass; all 3 levels played through in headless Chromium at iPhone size. Test page republished at the same link.
-- Next step: Product Owner plays levels 2-3 on iPhone and says if difficulty feels right. Then: level select screen with saved progress.
-- Struggled with: Nothing new. Still open: approval of "start and exit are safe tiles" rule and English UI text.
-
 ## Older entries (summary)
 - 2026-10-18/19: Project setup (CLAUDE.md, docs, permissions, Git/GitHub); chose Shadowbridge core prototype over simpler apps.
 - Approved stack: TypeScript + Vite + Canvas 2D + Vitest; Product Owner tests via a private claude.ai test page.
-- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule.
+- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns).

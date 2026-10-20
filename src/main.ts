@@ -7,6 +7,9 @@ import { browserStore, isUnlocked, loadProgress, recordWin, saveProgress } from 
 
 const STEP_MS = 420;
 const MELT_SECONDS = 0.7;
+/** In the first levels Pip glows orange for a moment in the sun before it melts. */
+const WARNING_LEVELS = 10;
+const WARNING_MS = 800;
 const HINT = "Set the sun, press Go, and keep turning it while Pip walks.";
 
 let levelIndex = 0;
@@ -191,6 +194,7 @@ function startWalk() {
   let to: Cell | null = null;
   let stepStart = 0;
   let meltStart = 0;
+  let hotSince: number | null = null;
 
   function frame(now: number) {
     if (id !== loopId) return;
@@ -203,6 +207,12 @@ function startWalk() {
       let f = 0;
       if (to) {
         f = Math.min(1, Math.max(0, (now - stepStart) / STEP_MS));
+        if (f < 0.5 && !isSafe(level, shadow, to) && isSafe(level, shadow, from)) {
+          // The next cell was lit before Pip got there: walk back instead.
+          [from, to] = [to, from];
+          f = 1 - f;
+          stepStart = now - f * STEP_MS;
+        }
         if (f >= 1) {
           from = to;
           to = null;
@@ -222,12 +232,23 @@ function startWalk() {
       } else {
         // Pip counts as standing on whichever cell holds most of its body.
         const standing = to && f >= 0.5 ? to : from;
-        if (!isSafe(level, shadow, standing)) {
-          phase = "melting";
-          meltStart = now;
-          dragStartAngle = null;
-          setMessage("Pip melted in the light.");
-          updateHud();
+        if (isSafe(level, shadow, standing)) {
+          if (hotSince !== null) setMessage("Keep Pip in the shadow!");
+          hotSince = null;
+        } else {
+          if (hotSince === null) {
+            hotSince = now;
+            setMessage("Pip is in the sun! Shade it!");
+          }
+          const warning = level.id <= WARNING_LEVELS ? WARNING_MS : 0;
+          pip.hot = Math.min(1, (now - hotSince) / WARNING_MS);
+          if (now - hotSince >= warning) {
+            phase = "melting";
+            meltStart = now;
+            dragStartAngle = null;
+            setMessage("Pip melted in the light.");
+            updateHud();
+          }
         }
       }
     } else if (phase === "melting") {

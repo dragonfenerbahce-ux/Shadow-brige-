@@ -28,9 +28,9 @@ describe("progress", () => {
 
   it("ignores broken saved data", () => {
     const store = memoryStore();
-    store.setItem("shadowbridge.progress.v2", "not json");
+    store.setItem("shadowbridge.progress.v3", "not json");
     expect(loadProgress(store)).toEqual({});
-    store.setItem("shadowbridge.progress.v2", '{"1":"x","2":5}');
+    store.setItem("shadowbridge.progress.v3", '{"1":"x","2":5}');
     expect(loadProgress(store)).toEqual({ 2: 5 });
   });
 

@@ -11,9 +11,10 @@
 - [x] Sun snaps to 8/16 directions; easier, predictable levels
 - [x] 10 levels (7x7 and 9x9), level select screen, saved progress
 - [x] 40 levels with a slow ramp; light stones from level 35
+- [x] Beginner-friendly start: tutorials, hints, orange warning in levels 1-10, 48 levels
 
 ## Now
-- [ ] iPhone test of the 40 levels by Product Owner
+- [ ] Same friend replays on iPhone: how far do they get now?
 
 ## Next
 - [ ] Result overlay (Retry / Next / Levels)

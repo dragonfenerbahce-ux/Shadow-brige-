@@ -1,8 +1,8 @@
 /** Best (fewest) moves per finished level id. A level is finished when it has an entry. */
 export type Progress = Record<number, number>;
 
-// v2: level ids were renumbered when the game grew to 40 levels.
-const KEY = "shadowbridge.progress.v2";
+// v3: level ids were renumbered when easy levels were added (48 levels).
+const KEY = "shadowbridge.progress.v3";
 
 type Store = Pick<Storage, "getItem" | "setItem">;
 

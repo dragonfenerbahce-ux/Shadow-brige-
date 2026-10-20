@@ -1,12 +1,56 @@
 import type { Level } from "./level";
 
 /**
- * Levels in play order. Difficulty grows slowly: 8 then 16 sun directions, 7x7 then 9x9 boards,
- * and light stones from level 35. Generated with the solver, then hand-ordered by sun turns needed.
+ * Levels in play order. Levels 1-3 need no sun turn, early levels are short and easy levels
+ * are mixed in as breathers. Later: 16 sun directions, 9x9 boards, then light stones.
+ * Generated with the solver and ordered by the sun turns needed (see EXPECTED_TURNS in tests).
  */
 export const LEVELS: Level[] = [
   {
     id: 1,
+    size: 7,
+    blocks: [
+      { x: 3, y: 4, h: 3 },
+      { x: 0, y: 5, h: 3 },
+      { x: 2, y: 5, h: 3 },
+    ],
+    start: { x: 6, y: 3 },
+    exit: { x: 0, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+    hint: "Drag the sun. Pip can only walk on dark cells. Make a dark path to the door, then press Go.",
+  },
+  {
+    id: 2,
+    size: 7,
+    blocks: [
+      { x: 3, y: 1, h: 3 },
+      { x: 0, y: 2, h: 3 },
+      { x: 3, y: 3, h: 2 },
+    ],
+    start: { x: 0, y: 3 },
+    exit: { x: 6, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+    hint: "Taller blocks cast longer shadows. Find the sun spot that links the dark cells.",
+  },
+  {
+    id: 3,
+    size: 7,
+    blocks: [
+      { x: 1, y: 2, h: 1 },
+      { x: 1, y: 4, h: 2 },
+      { x: 4, y: 4, h: 3 },
+      { x: 2, y: 5, h: 3 },
+    ],
+    start: { x: 6, y: 3 },
+    exit: { x: 0, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+    hint: "If Pip turns orange, the sun is hitting it. Turn the sun to shade Pip again.",
+  },
+  {
+    id: 4,
     size: 7,
     blocks: [
       { x: 6, y: 0, h: 1 },
@@ -19,9 +63,10 @@ export const LEVELS: Level[] = [
     exit: { x: 3, y: 0 },
     sunAngle: 90,
     directions: 8,
+    hint: "Pip stops where the shadow ends. While it waits, turn the sun to open the next path.",
   },
   {
-    id: 2,
+    id: 5,
     size: 7,
     blocks: [
       { x: 2, y: 1, h: 3 },
@@ -36,7 +81,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 3,
+    id: 6,
     size: 7,
     blocks: [
       { x: 4, y: 0, h: 3 },
@@ -51,7 +96,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 4,
+    id: 7,
     size: 7,
     blocks: [
       { x: 3, y: 1, h: 3 },
@@ -66,7 +111,22 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 5,
+    id: 8,
+    size: 7,
+    blocks: [
+      { x: 1, y: 1, h: 3 },
+      { x: 4, y: 1, h: 3 },
+      { x: 4, y: 3, h: 1 },
+      { x: 1, y: 4, h: 1 },
+      { x: 6, y: 6, h: 3 },
+    ],
+    start: { x: 6, y: 3 },
+    exit: { x: 0, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+  },
+  {
+    id: 9,
     size: 7,
     blocks: [
       { x: 3, y: 0, h: 3 },
@@ -82,7 +142,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 6,
+    id: 10,
     size: 7,
     blocks: [
       { x: 3, y: 0, h: 2 },
@@ -98,7 +158,22 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 7,
+    id: 11,
+    size: 7,
+    blocks: [
+      { x: 1, y: 0, h: 3 },
+      { x: 4, y: 0, h: 1 },
+      { x: 0, y: 2, h: 3 },
+      { x: 2, y: 2, h: 3 },
+    ],
+    start: { x: 0, y: 6 },
+    exit: { x: 6, y: 0 },
+    sunAngle: 90,
+    directions: 8,
+    hint: "From here on, the sun melts Pip right away. No more orange warning.",
+  },
+  {
+    id: 12,
     size: 7,
     blocks: [
       { x: 2, y: 0, h: 2 },
@@ -112,7 +187,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 8,
+    id: 13,
     size: 7,
     blocks: [
       { x: 2, y: 2, h: 2 },
@@ -128,7 +203,22 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 9,
+    id: 14,
+    size: 7,
+    blocks: [
+      { x: 6, y: 2, h: 3 },
+      { x: 3, y: 3, h: 3 },
+      { x: 4, y: 3, h: 1 },
+      { x: 2, y: 6, h: 1 },
+      { x: 6, y: 6, h: 2 },
+    ],
+    start: { x: 0, y: 3 },
+    exit: { x: 6, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+  },
+  {
+    id: 15,
     size: 7,
     blocks: [
       { x: 5, y: 0, h: 2 },
@@ -143,7 +233,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 10,
+    id: 16,
     size: 7,
     blocks: [
       { x: 1, y: 1, h: 1 },
@@ -159,7 +249,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 11,
+    id: 17,
     size: 7,
     blocks: [
       { x: 5, y: 2, h: 1 },
@@ -173,7 +263,7 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 12,
+    id: 18,
     size: 7,
     blocks: [
       { x: 2, y: 0, h: 2 },
@@ -187,7 +277,21 @@ export const LEVELS: Level[] = [
     directions: 8,
   },
   {
-    id: 13,
+    id: 19,
+    size: 7,
+    blocks: [
+      { x: 1, y: 2, h: 3 },
+      { x: 3, y: 2, h: 1 },
+      { x: 5, y: 3, h: 2 },
+      { x: 4, y: 5, h: 3 },
+    ],
+    start: { x: 6, y: 3 },
+    exit: { x: 0, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+  },
+  {
+    id: 20,
     size: 7,
     blocks: [
       { x: 1, y: 1, h: 3 },
@@ -201,7 +305,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 14,
+    id: 21,
     size: 7,
     blocks: [
       { x: 1, y: 3, h: 2 },
@@ -214,7 +318,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 15,
+    id: 22,
     size: 7,
     blocks: [
       { x: 0, y: 2, h: 1 },
@@ -229,7 +333,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 16,
+    id: 23,
     size: 7,
     blocks: [
       { x: 3, y: 1, h: 1 },
@@ -244,7 +348,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 17,
+    id: 24,
     size: 7,
     blocks: [
       { x: 1, y: 0, h: 2 },
@@ -259,7 +363,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 18,
+    id: 25,
     size: 7,
     blocks: [
       { x: 3, y: 0, h: 2 },
@@ -276,7 +380,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 19,
+    id: 26,
     size: 7,
     blocks: [
       { x: 4, y: 0, h: 1 },
@@ -293,7 +397,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 20,
+    id: 27,
     size: 7,
     blocks: [
       { x: 5, y: 2, h: 2 },
@@ -307,7 +411,21 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 21,
+    id: 28,
+    size: 7,
+    blocks: [
+      { x: 2, y: 1, h: 2 },
+      { x: 4, y: 2, h: 1 },
+      { x: 2, y: 3, h: 2 },
+      { x: 3, y: 5, h: 2 },
+    ],
+    start: { x: 0, y: 3 },
+    exit: { x: 6, y: 3 },
+    sunAngle: 90,
+    directions: 8,
+  },
+  {
+    id: 29,
     size: 9,
     blocks: [
       { x: 2, y: 3, h: 3 },
@@ -325,7 +443,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 22,
+    id: 30,
     size: 9,
     blocks: [
       { x: 5, y: 1, h: 1 },
@@ -344,7 +462,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 23,
+    id: 31,
     size: 9,
     blocks: [
       { x: 5, y: 1, h: 2 },
@@ -360,7 +478,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 24,
+    id: 32,
     size: 9,
     blocks: [
       { x: 2, y: 2, h: 3 },
@@ -380,7 +498,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 25,
+    id: 33,
     size: 9,
     blocks: [
       { x: 4, y: 1, h: 3 },
@@ -399,7 +517,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 26,
+    id: 34,
     size: 9,
     blocks: [
       { x: 5, y: 0, h: 1 },
@@ -419,7 +537,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 27,
+    id: 35,
     size: 9,
     blocks: [
       { x: 5, y: 0, h: 1 },
@@ -439,7 +557,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 28,
+    id: 36,
     size: 9,
     blocks: [
       { x: 1, y: 0, h: 3 },
@@ -458,7 +576,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 29,
+    id: 37,
     size: 9,
     blocks: [
       { x: 2, y: 1, h: 2 },
@@ -477,7 +595,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 30,
+    id: 38,
     size: 9,
     blocks: [
       { x: 3, y: 0, h: 1 },
@@ -498,7 +616,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 31,
+    id: 39,
     size: 9,
     blocks: [
       { x: 1, y: 2, h: 1 },
@@ -517,7 +635,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 32,
+    id: 40,
     size: 9,
     blocks: [
       { x: 3, y: 1, h: 2 },
@@ -537,7 +655,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 33,
+    id: 41,
     size: 9,
     blocks: [
       { x: 2, y: 1, h: 2 },
@@ -556,7 +674,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 34,
+    id: 42,
     size: 9,
     blocks: [
       { x: 2, y: 0, h: 2 },
@@ -575,7 +693,7 @@ export const LEVELS: Level[] = [
     directions: 16,
   },
   {
-    id: 35,
+    id: 43,
     size: 7,
     blocks: [
       { x: 4, y: 1, h: 1 },
@@ -593,7 +711,7 @@ export const LEVELS: Level[] = [
     hint: "New: light stones glow. Nothing can shade them or the cells beside them.",
   },
   {
-    id: 36,
+    id: 44,
     size: 7,
     blocks: [
       { x: 2, y: 0, h: 3 },
@@ -610,7 +728,7 @@ export const LEVELS: Level[] = [
     lights: [{ x: 4, y: 3 }],
   },
   {
-    id: 37,
+    id: 45,
     size: 7,
     blocks: [
       { x: 2, y: 0, h: 2 },
@@ -627,7 +745,7 @@ export const LEVELS: Level[] = [
     lights: [{ x: 4, y: 2 }],
   },
   {
-    id: 38,
+    id: 46,
     size: 9,
     blocks: [
       { x: 0, y: 1, h: 1 },
@@ -647,7 +765,7 @@ export const LEVELS: Level[] = [
     lights: [{ x: 1, y: 0 }, { x: 1, y: 2 }],
   },
   {
-    id: 39,
+    id: 47,
     size: 9,
     blocks: [
       { x: 7, y: 0, h: 1 },
@@ -668,7 +786,7 @@ export const LEVELS: Level[] = [
     lights: [{ x: 8, y: 1 }, { x: 3, y: 6 }],
   },
   {
-    id: 40,
+    id: 48,
     size: 9,
     blocks: [
       { x: 7, y: 0, h: 1 },

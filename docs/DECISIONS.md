@@ -56,3 +56,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Product Owner found the 10-level ramp good but steep (stuck around level 8) and wanted more, faster early levels, with the light tile around levels 35-40.
 - Alternative considered: A bomb tile; rejected earlier for not fitting the calm light/shadow theme.
 - Trade-off: Earlier saved progress on the phone is reset once.
+
+### 2026-10-20: Beginner-friendly start (48 levels, warning, tutorials)
+- Decision: In levels 1-10 Pip glows orange for 0.8 s in the sun before melting; Pip walks back if its next cell is lit mid-step; Pip is drawn smaller so its cell's shade stays visible. Three new one-direction tutorial levels open the game, easy levels are mixed in (48 levels in total), and levels 1-4 and 11 show hints. Saved progress moved to a new storage key.
+- Reason: A friend's first playtest: quit at level 3 after 30 seconds, found it too hard, and felt "I was behind the block but the sun hit me".
+- Alternative considered: Keep instant melting everywhere and only add hints.
+- Trade-off: The warning makes early levels easier to brute-force; progress on phones is reset once; light stones now start at level 43.
