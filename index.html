@@ -30,8 +30,19 @@
         <footer class="controls">
           <button id="restart" class="btn btn-secondary" type="button">Restart</button>
           <button id="go" class="btn btn-primary" type="button">Go</button>
-          <button id="next" class="btn btn-primary" type="button" hidden>Next level</button>
         </footer>
+
+        <div id="result" class="result" hidden>
+          <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="result-title">
+            <h2 id="result-title">Wonderful!</h2>
+            <p id="result-detail" class="result-detail">Moves: 0</p>
+            <div class="result-actions">
+              <button id="result-next" class="btn btn-primary" type="button">Next level</button>
+              <button id="result-retry" class="btn btn-secondary" type="button">Retry</button>
+              <button id="result-levels" class="btn btn-secondary" type="button">Levels</button>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>

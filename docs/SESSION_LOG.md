@@ -2,6 +2,11 @@
 
 Latest 5 entries only. Older entries are summarized at the bottom.
 
+## 2026-10-21: Result card, Pip hop, exit sparkle, #unlock test link
+- Done: Added `#unlock` link (all levels open for the Product Owner). Product Owner synced the repo to the Mac with GitHub Desktop. Built the result card (win: title, moves, New best/Best, Next/Retry/Levels; melt: Retry/Levels), Pip hops on each step, sparkle at the exit before the card. 218 tests pass; win and melt cards and every button checked in headless Chromium; all 48 levels played through via the card's Next button.
+- Next step: Product Owner tries the new card on iPhone. Then pick: sound, a new mechanic, or a friend playtest round.
+- Struggled with: Full 48-level browser run hit the 10-minute command limit after adding card waits; split into two parallel halves.
+
 ## 2026-10-20: Shadows to the board edge, all 48 levels rebuilt
 - Done: Product Owner marked level 18: cells behind a block were lit (shadow length = block height felt wrong). Approved: shadows reach the board edge, heights removed. Regenerated all 48 levels with the same turn curve (0,0,0,1,...,11). 217 tests pass; all 48 levels played through in one headless Chromium run (timed from solver walk lengths); all 48 open from level select.
 - Next step: Product Owner and friend replay on iPhone. Then pick the next feature (result screen, visual polish, or new mechanic).
@@ -22,12 +27,7 @@ Latest 5 entries only. Older entries are summarized at the bottom.
 - Next step: Product Owner plays the 10 levels on iPhone. Then decide the first new mechanic ("light stone" tile proposed instead of a bomb).
 - Struggled with: Product Owner suggested a bomb tile; proposed a light-themed tile instead to keep the calm style. Many solutions are "keep turning one way"; watch for repetition.
 
-## 2026-10-19: Snapped sun directions and easier levels
-- Done: Playtest of live-walk levels: shadows felt inconsistent, too hard. Approved snapping: 8 directions early, 16 later. Added per-level `directions`, sun stop dots, slower Pip, sun ring moved outside the board. Solver now models a careful player (Pip walks after every notch). New levels need 2, 3 and 5 notch turns. 25 tests pass; all 3 levels played through in headless Chromium. Test page republished. Pushed earlier commits.
-- Next step: Product Owner plays on iPhone: are shadows predictable now, is difficulty right? Then: level select screen with saved progress.
-- Struggled with: First solver assumed Pip stands still while the sun turns; real play melted Pip on level 3. Fixed by modelling a walk after every notch.
-
 ## Older entries (summary)
 - 2026-10-18/19: Project setup (CLAUDE.md, docs, permissions, Git/GitHub); chose Shadowbridge core prototype over simpler apps.
 - Approved stack: TypeScript + Vite + Canvas 2D + Vitest; Product Owner tests via a private claude.ai test page.
-- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions.
+- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions (8, later 16).

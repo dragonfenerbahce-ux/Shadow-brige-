@@ -10,6 +10,8 @@ const MELT_SECONDS = 0.7;
 /** In the first levels Pip glows orange for a moment in the sun before it melts. */
 const WARNING_LEVELS = 10;
 const WARNING_MS = 800;
+/** How long the exit sparkles before the result card appears. */
+const SPARKLE_MS = 1100;
 const HINT = "Set the sun, press Go, and keep turning it while Pip walks.";
 
 let levelIndex = 0;
@@ -23,19 +25,25 @@ const movesEl = document.querySelector<HTMLSpanElement>("#moves")!;
 const messageEl = document.querySelector<HTMLParagraphElement>("#message")!;
 const goBtn = document.querySelector<HTMLButtonElement>("#go")!;
 const restartBtn = document.querySelector<HTMLButtonElement>("#restart")!;
-const nextBtn = document.querySelector<HTMLButtonElement>("#next")!;
 const backBtn = document.querySelector<HTMLButtonElement>("#back")!;
 const selectScreen = document.querySelector<HTMLElement>("#select-screen")!;
 const playScreen = document.querySelector<HTMLElement>("#play-screen")!;
 const levelGrid = document.querySelector<HTMLDivElement>("#level-grid")!;
 const doneCountEl = document.querySelector<HTMLSpanElement>("#done-count")!;
+const resultEl = document.querySelector<HTMLDivElement>("#result")!;
+const resultCard = resultEl.querySelector<HTMLDivElement>(".result-card")!;
+const resultTitle = document.querySelector<HTMLHeadingElement>("#result-title")!;
+const resultDetail = document.querySelector<HTMLParagraphElement>("#result-detail")!;
+const resultNextBtn = document.querySelector<HTMLButtonElement>("#result-next")!;
+const resultRetryBtn = document.querySelector<HTMLButtonElement>("#result-retry")!;
+const resultLevelsBtn = document.querySelector<HTMLButtonElement>("#result-levels")!;
 
 const store = browserStore();
 /** Test mode: a link ending with #unlock opens every level. */
 const unlockAll = location.hash === "#unlock";
 let progress = loadProgress(store);
 
-type Phase = "idle" | "walking" | "melting" | "won" | "melted";
+type Phase = "idle" | "walking" | "melting" | "celebrating" | "won" | "melted";
 
 let layout: Layout;
 let sunAngle = level.sunAngle;
@@ -46,9 +54,11 @@ let pip: PipState = { ...level.start, scale: 1 };
 let dragStartAngle: number | null = null;
 /** Bumped on restart so an old animation loop stops. */
 let loopId = 0;
+/** Progress of the exit sparkle, 0-1, or null when not celebrating. */
+let sparkle: number | null = null;
 
 function render() {
-  draw(ctx, layout, level, shadow, sunAngle, pip);
+  draw(ctx, layout, level, shadow, sunAngle, pip, sparkle);
 }
 
 function resize() {
@@ -69,13 +79,33 @@ function updateHud() {
   levelEl.textContent = `Level ${level.id} of ${LEVELS.length}`;
   movesEl.textContent = `Moves: ${moves}`;
   goBtn.disabled = phase !== "idle";
-  const showNext = phase === "won" && levelIndex < LEVELS.length - 1;
-  nextBtn.hidden = !showNext;
-  goBtn.hidden = showNext;
+}
+
+/** Shows the result card. `previousBest` is the best move count before this win. */
+function showResult(won: boolean, previousBest?: number) {
+  const last = levelIndex === LEVELS.length - 1;
+  resultCard.classList.toggle("melted", !won);
+  if (won) {
+    resultTitle.textContent = last ? "All levels done!" : "Wonderful!";
+    const best = previousBest === undefined || moves < previousBest ? "New best!" : `Best: ${previousBest}`;
+    resultDetail.textContent = `Pip made it in ${moves} ${moves === 1 ? "move" : "moves"}. ${best}`;
+  } else {
+    resultTitle.textContent = "Pip melted";
+    resultDetail.textContent = "The sun reached Pip. Try another way.";
+  }
+  resultNextBtn.hidden = !won || last;
+  resultEl.hidden = false;
+  (resultNextBtn.hidden ? resultRetryBtn : resultNextBtn).focus();
+}
+
+function hideResult() {
+  resultEl.hidden = true;
 }
 
 function restart() {
   loopId++;
+  hideResult();
+  sparkle = null;
   sunAngle = level.sunAngle;
   shadow = computeShadows(level, sunAngle);
   moves = 0;
@@ -121,6 +151,7 @@ function renderLevelGrid() {
 
 function showSelect() {
   loopId++;
+  hideResult();
   playScreen.hidden = true;
   selectScreen.hidden = false;
   renderLevelGrid();
@@ -197,6 +228,8 @@ function startWalk() {
   let stepStart = 0;
   let meltStart = 0;
   let hotSince: number | null = null;
+  let winAt = 0;
+  let previousBest: number | undefined;
 
   function frame(now: number) {
     if (id !== loopId) return;
@@ -222,14 +255,16 @@ function startWalk() {
         }
       }
       const target = to ?? from;
-      pip = { x: from.x + (target.x - from.x) * f, y: from.y + (target.y - from.y) * f, scale: 1 };
+      // Pip hops a little on every step.
+      pip = { x: from.x + (target.x - from.x) * f, y: from.y + (target.y - from.y) * f, scale: 1, hop: Math.sin(f * Math.PI) };
 
       if (sameCell(from, level.exit) && !to) {
-        phase = "won";
+        phase = "celebrating";
+        winAt = now;
+        previousBest = progress[level.id];
         progress = recordWin(progress, level.id, moves);
         saveProgress(store, progress);
-        const last = levelIndex === LEVELS.length - 1;
-        setMessage(last ? `Pip made it! All levels done. Moves: ${moves}` : `Pip made it! Moves: ${moves}`);
+        setMessage(`Pip made it! Moves: ${moves}`);
         updateHud();
       } else {
         // Pip counts as standing on whichever cell holds most of its body.
@@ -257,13 +292,21 @@ function startWalk() {
       pip.scale = Math.max(0, 1 - (now - meltStart) / 1000 / MELT_SECONDS);
       if (pip.scale === 0) {
         phase = "melted";
-        setMessage("Pip melted in the light. Press Restart to try again.");
+        setMessage("Pip melted in the light.");
         updateHud();
+        showResult(false);
+      }
+    } else if (phase === "celebrating") {
+      sparkle = Math.min(1, (now - winAt) / SPARKLE_MS);
+      if (sparkle === 1) {
+        phase = "won";
+        sparkle = null;
+        showResult(true, previousBest);
       }
     }
 
     render();
-    if (phase === "walking" || phase === "melting") requestAnimationFrame(frame);
+    if (phase === "walking" || phase === "melting" || phase === "celebrating") requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
@@ -273,7 +316,9 @@ goBtn.addEventListener("click", () => {
 });
 
 restartBtn.addEventListener("click", restart);
-nextBtn.addEventListener("click", () => loadLevel(levelIndex + 1));
+resultNextBtn.addEventListener("click", () => loadLevel(levelIndex + 1));
+resultRetryBtn.addEventListener("click", restart);
+resultLevelsBtn.addEventListener("click", showSelect);
 backBtn.addEventListener("click", showSelect);
 window.addEventListener("resize", resize);
 

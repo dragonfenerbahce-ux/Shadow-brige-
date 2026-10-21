@@ -13,12 +13,13 @@
 - [x] 40 levels with a slow ramp; light stones from level 35
 - [x] Beginner-friendly start: tutorials, hints, orange warning in levels 1-10, 48 levels
 - [x] Shadows reach the board edge; all 48 levels rebuilt and played through
+- [x] Result card (Next / Retry / Levels), Pip hop, exit sparkle; #unlock test link
 
 ## Now
 - [ ] Product Owner and friend replay on iPhone
 
 ## Next
-- [ ] Result overlay (Retry / Next / Levels)
+- [ ] Sound (soft music and effects), after Product Owner approval
 - [ ] iPhone playtest with a friend: is it fun?
 
 ## Later

@@ -52,6 +52,8 @@ export interface PipState {
   scale: number;
   /** 0 = in shadow, up to 1 = glowing orange in the sun just before melting. */
   hot?: number;
+  /** 0-1 height of the little hop Pip makes on each step. */
+  hop?: number;
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -66,6 +68,8 @@ export function draw(
   shadow: boolean[][],
   sunAngle: number,
   pip: PipState,
+  /** 0-1 progress of the win sparkle at the exit, or null. */
+  sparkle: number | null = null,
 ) {
   const { cell, originX, originY, size } = layout;
   ctx.clearRect(0, 0, size, size);
@@ -147,7 +151,9 @@ export function draw(
 
   const hot = pip.hot ?? 0;
   const shake = hot > 0 ? Math.sin(performance.now() / 25) * cell * 0.05 : 0;
-  drawPip(ctx, cellX(pip.x) + cell / 2 + shake, cellY(pip.y) + cell / 2, cell, pip.scale, hot);
+  const hop = (pip.hop ?? 0) * cell * 0.12;
+  drawPip(ctx, cellX(pip.x) + cell / 2 + shake, cellY(pip.y) + cell / 2 - hop, cell, pip.scale, hot);
+  if (sparkle !== null) drawSparkle(ctx, cellX(level.exit.x) + cell / 2, cellY(level.exit.y) + cell / 2, cell, sparkle);
 
   // Sun handle.
   const sun = sunPosition(layout, sunAngle);
@@ -204,4 +210,22 @@ function drawPip(ctx: CanvasRenderingContext2D, cx: number, cy: number, cell: nu
     ctx.arc(cx + side * r * 0.38, cy - r * 0.1, r * 0.13, 0, Math.PI * 2);
     ctx.fill();
   }
+}
+
+/** Glowing dust rising from the exit when Pip arrives. `t` runs from 0 to 1. */
+function drawSparkle(ctx: CanvasRenderingContext2D, cx: number, cy: number, cell: number, t: number) {
+  const count = 16;
+  ctx.save();
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2 + i * 0.7;
+    const reach = cell * (0.3 + t * (1.1 + (i % 4) * 0.25));
+    const x = cx + Math.cos(angle) * reach;
+    const y = cy + Math.sin(angle) * reach * 0.7 - t * cell * 0.5;
+    ctx.globalAlpha = Math.max(0, 1 - t) * (i % 2 ? 0.9 : 0.6);
+    ctx.fillStyle = i % 3 === 0 ? COLORS.cream : COLORS.sun;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(2, cell * 0.09 * (1 - t * 0.5)), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
 }
