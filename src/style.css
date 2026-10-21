@@ -19,20 +19,14 @@ body {
   margin: 0;
   min-height: 100%;
   overscroll-behavior: none;
+  /* One sunset over the whole page, however long it is: no-repeat, sized to the body. */
+  background: var(--plum) linear-gradient(180deg, #ffb38a 0%, #c98bb0 55%, var(--plum) 100%) no-repeat;
+  background-size: 100% 100%;
   color: var(--cream);
   font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* The sunset sky stays put while long pages (like the level list) scroll over it. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(180deg, #ffb38a 0%, #c98bb0 55%, var(--plum) 100%);
 }
 
 .game {
