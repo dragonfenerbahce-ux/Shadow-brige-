@@ -70,7 +70,7 @@ Requires Node.js 22.12+ on the Mac.
 - Trade-off: Less puzzle variety without heights; boards get darker; progress on phones is reset once.
 
 ### 2026-10-21: Test mode link opens every level
-- Decision: A page link ending with `#unlock` opens all levels; the normal link keeps levels unlocking in order.
+- Decision: A page link ending with `#unlock` opens all levels; the normal link keeps levels unlocking in order. Update 2026-10-21: tapping the "Shadowbridge" title 5 times on the level list also toggles this test mode (saved on the phone), because the link hash may not reach the page inside Claude's viewer.
 - Reason: Product Owner tests levels often and should not have to replay earlier ones.
 - Alternative considered: Unlock every level for everyone.
 - Trade-off: Anyone who learns the `#unlock` link can skip ahead.

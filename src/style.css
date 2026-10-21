@@ -10,17 +10,29 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  height: 100%;
+  background: var(--plum);
+}
+
 body {
   margin: 0;
-  height: 100%;
+  min-height: 100%;
   overscroll-behavior: none;
-  background: linear-gradient(180deg, #ffb38a 0%, #c98bb0 55%, var(--plum) 100%);
   color: var(--cream);
   font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* The sunset sky stays put while long pages (like the level list) scroll over it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #ffb38a 0%, #c98bb0 55%, var(--plum) 100%);
 }
 
 .game {

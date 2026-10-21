@@ -30,6 +30,7 @@ const selectScreen = document.querySelector<HTMLElement>("#select-screen")!;
 const playScreen = document.querySelector<HTMLElement>("#play-screen")!;
 const levelGrid = document.querySelector<HTMLDivElement>("#level-grid")!;
 const doneCountEl = document.querySelector<HTMLSpanElement>("#done-count")!;
+const titleEl = document.querySelector<HTMLSpanElement>("#game-title")!;
 const resultEl = document.querySelector<HTMLDivElement>("#result")!;
 const resultCard = resultEl.querySelector<HTMLDivElement>(".result-card")!;
 const resultTitle = document.querySelector<HTMLHeadingElement>("#result-title")!;
@@ -39,8 +40,25 @@ const resultRetryBtn = document.querySelector<HTMLButtonElement>("#result-retry"
 const resultLevelsBtn = document.querySelector<HTMLButtonElement>("#result-levels")!;
 
 const store = browserStore();
-/** Test mode: a link ending with #unlock opens every level. */
-const unlockAll = location.hash === "#unlock";
+const UNLOCK_KEY = "shadowbridge.unlockAll";
+/** Test mode opens every level: a link ending with #unlock, or tapping the title 5 times. */
+let unlockAll = location.hash === "#unlock" || readFlag(UNLOCK_KEY);
+
+function readFlag(key: string): boolean {
+  try {
+    return store?.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeFlag(key: string, on: boolean) {
+  try {
+    store?.setItem(key, on ? "1" : "0");
+  } catch {
+    // Test mode then lasts only until the page reloads.
+  }
+}
 let progress = loadProgress(store);
 
 type Phase = "idle" | "walking" | "melting" | "celebrating" | "won" | "melted";
@@ -131,7 +149,7 @@ function loadLevel(index: number) {
 
 function renderLevelGrid() {
   const done = LEVELS.filter((l) => progress[l.id] !== undefined).length;
-  doneCountEl.textContent = `${done} of ${LEVELS.length} done`;
+  doneCountEl.textContent = unlockAll ? `${done}/${LEVELS.length} · test mode` : `${done} of ${LEVELS.length} done`;
   levelGrid.replaceChildren(
     ...LEVELS.map((l, i) => {
       const btn = document.createElement("button");
@@ -320,6 +338,18 @@ resultNextBtn.addEventListener("click", () => loadLevel(levelIndex + 1));
 resultRetryBtn.addEventListener("click", restart);
 resultLevelsBtn.addEventListener("click", showSelect);
 backBtn.addEventListener("click", showSelect);
+
+// Hidden test switch: five quick taps on the title turn "all levels open" on or off.
+let titleTaps: number[] = [];
+titleEl.addEventListener("click", () => {
+  const now = Date.now();
+  titleTaps = [...titleTaps.filter((t) => now - t < 2000), now];
+  if (titleTaps.length < 5) return;
+  titleTaps = [];
+  unlockAll = !unlockAll;
+  writeFlag(UNLOCK_KEY, unlockAll);
+  renderLevelGrid();
+});
 window.addEventListener("resize", resize);
 
 showSelect();
