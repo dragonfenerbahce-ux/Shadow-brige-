@@ -2,6 +2,11 @@
 
 Latest 5 entries only. Older entries are summarized at the bottom.
 
+## 2026-10-21: First-play coach experiment
+- Done: Added src/coach.ts (coach decisions, tested) and coach marks in src/render.ts; wired into src/main.ts. New players start in level 1; existing progress keeps the level list. 226 tests pass; 19 browser checks pass (new/existing player, board tap, wrong/right sun, Go pulse, waiting message, level 2 and 4 behaviour); all 48 levels still play through. No changes to src/game/.
+- Next step: Playtest with 3 people who never saw the game: time to first sun drag, time to win level 1, furthest level, can they explain the goal. Success: 2 of 3 drag within 5 s, win level 1 under 30 s, reach level 4.
+- Struggled with: Playwright will not click a pulsing button by default (test uses force); a board-tap nudge kept the bubble visible during dragging until the nudge was cleared on drag start.
+
 ## 2026-10-21: Sound, background fix, title-tap test mode
 - Done: Fixed the repeating background on long pages, then a white background inside the Claude app (gradient now on body). Added a title-tap (5x) test switch because `#unlock` may not reach the page in Claude's viewer; Product Owner confirmed it works. Added synthesized music and effects (src/audio.ts) with a sound on/off button. 220 tests pass; in headless Chromium the audio starts only after the first tap, notes play for ticks/steps/win, and the mute choice survives a reload.
 - Next step: Product Owner listens on iPhone (with and without the silent switch) and says if music/effects feel right. Then: friend playtest round.
@@ -22,12 +27,7 @@ Latest 5 entries only. Older entries are summarized at the bottom.
 - Next step: Same friend plays again on iPhone; compare how far they get. Then: result overlay or more mechanics.
 - Struggled with: Browser test first waited too short for long walks (level 7), which looked like a bug but was not.
 
-## 2026-10-19: 40 levels and light stones
-- Done: Generated 40 levels in difficulty tiers with the solver (turns 1-10, 7x7 and 9x9, 8 and 16 directions). Added light stones (src/game/level.ts `lights`, never shaded, light their 4 neighbours) from level 35 with an intro hint. Fixed a crash when opening a level of a different board size from level select (also in the published 10-level build). 186 tests pass; levels 1, 2, 21, 35, 38 played through in headless Chromium; all 40 levels opened from level select in both orders without errors.
-- Next step: Product Owner plays on iPhone, especially levels 1-10 (should be quick) and 35+ (light stones). Then: result overlay or next mechanic.
-- Struggled with: Level select bug was missed because earlier browser tests only used the Next button; now the test opens every level from the grid.
-
 ## Older entries (summary)
 - 2026-10-18/19: Project setup (CLAUDE.md, docs, permissions, Git/GitHub); chose Shadowbridge core prototype over simpler apps.
 - Approved stack: TypeScript + Vite + Canvas 2D + Vitest; Product Owner tests via a private claude.ai test page.
-- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions (8, later 16); levels grew to 10 with a level select and saved progress.
+- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions (8, later 16); levels grew to 10 with a level select and saved progress, then 40 levels with light stones.

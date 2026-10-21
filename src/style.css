@@ -209,6 +209,18 @@ body {
   background: #f3e3c9;
 }
 
+/* Coach: Go pulses when the player's dark path reaches the door. */
+.btn.pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 8px rgb(255 138 101 / 35%);
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -224,7 +236,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .result,
-  .result-card {
+  .result-card,
+  .btn.pulse {
     animation: none;
   }
 }

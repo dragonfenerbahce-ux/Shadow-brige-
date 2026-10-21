@@ -1,4 +1,4 @@
-import { litByStone, type Level } from "./game/level";
+import { litByStone, type Cell, type Level } from "./game/level";
 
 export const COLORS = {
   coral: "#FF8A65",
@@ -61,6 +61,16 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.roundRect(x, y, w, h, r);
 }
 
+/** First-play coach marks drawn over the board (see src/coach.ts). */
+export interface CoachMarks {
+  /** Pulse the sun and show the "Drag the sun" bubble. */
+  pointAtSun: boolean;
+  /** Cells Pip would walk with the current sun, starting at Pip; null for none. */
+  preview: Cell[] | null;
+  /** Glow the door: the previewed path reaches it. */
+  doorGlow: boolean;
+}
+
 export function draw(
   ctx: CanvasRenderingContext2D,
   layout: Layout,
@@ -70,6 +80,7 @@ export function draw(
   pip: PipState,
   /** 0-1 progress of the win sparkle at the exit, or null. */
   sparkle: number | null = null,
+  coach: CoachMarks | null = null,
 ) {
   const { cell, originX, originY, size } = layout;
   ctx.clearRect(0, 0, size, size);
@@ -149,6 +160,26 @@ export function draw(
     ctx.fill();
   }
 
+  // Coach: dots on the cells Pip could walk, and a glow on the door when they reach it.
+  const pulse = (Math.sin(performance.now() / 260) + 1) / 2;
+  if (coach?.doorGlow) {
+    const ex = cellX(level.exit.x) + cell / 2;
+    const ey = cellY(level.exit.y) + cell / 2;
+    const glow = ctx.createRadialGradient(ex, ey, 0, ex, ey, cell * (0.8 + pulse * 0.3));
+    glow.addColorStop(0, "rgba(255, 138, 101, 0.7)");
+    glow.addColorStop(1, "rgba(255, 138, 101, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(ex, ey, cell * 1.1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (const c of coach?.preview?.slice(1) ?? []) {
+    ctx.fillStyle = COLORS.cream;
+    ctx.beginPath();
+    ctx.arc(cellX(c.x) + cell / 2, cellY(c.y) + cell / 2, Math.max(2.5, cell * 0.09), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   const hot = pip.hot ?? 0;
   const shake = hot > 0 ? Math.sin(performance.now() / 25) * cell * 0.05 : 0;
   const hop = (pip.hop ?? 0) * cell * 0.12;
@@ -168,6 +199,61 @@ export function draw(
   ctx.beginPath();
   ctx.arc(sun.x, sun.y, layout.sunRadius, 0, Math.PI * 2);
   ctx.fill();
+
+  if (coach?.pointAtSun) drawSunCoach(ctx, layout, sunAngle, pulse);
+}
+
+/** A pulsing ring around the sun, arrows along its orbit and a "Drag the sun" bubble. */
+function drawSunCoach(ctx: CanvasRenderingContext2D, layout: Layout, sunAngle: number, pulse: number) {
+  const sun = sunPosition(layout, sunAngle);
+  const r = layout.sunRadius;
+
+  ctx.strokeStyle = `rgba(255, 244, 224, ${0.9 - pulse * 0.6})`;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, r * (1.4 + pulse * 0.9), 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Arrows on the orbit on both sides of the sun: it moves along the ring.
+  const rad = (sunAngle * Math.PI) / 180;
+  ctx.strokeStyle = COLORS.cream;
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  for (const side of [-1, 1]) {
+    const a0 = rad + side * 0.22;
+    const a1 = rad + side * 0.42;
+    ctx.beginPath();
+    ctx.arc(layout.center, layout.center, layout.sunOrbit, Math.min(a0, a1), Math.max(a0, a1));
+    ctx.stroke();
+    const tip = { x: layout.center + Math.cos(a1) * layout.sunOrbit, y: layout.center + Math.sin(a1) * layout.sunOrbit };
+    const tangent = a1 + (side * Math.PI) / 2;
+    for (const wing of [-0.6, 0.6]) {
+      ctx.beginPath();
+      ctx.moveTo(tip.x, tip.y);
+      ctx.lineTo(tip.x - Math.cos(tangent + wing) * 9, tip.y - Math.sin(tangent + wing) * 9);
+      ctx.stroke();
+    }
+  }
+  ctx.lineCap = "butt";
+
+  // The bubble sits between the sun and the board centre, kept inside the canvas.
+  const label = "Drag the sun";
+  ctx.font = `700 ${Math.max(13, r * 0.9)}px ui-rounded, system-ui, sans-serif`;
+  const w = ctx.measureText(label).width + 20;
+  const h = Math.max(26, r * 1.6);
+  const toward = { x: layout.center - sun.x, y: layout.center - sun.y };
+  const len = Math.hypot(toward.x, toward.y) || 1;
+  let bx = sun.x + (toward.x / len) * r * 3.4 - w / 2;
+  let by = sun.y + (toward.y / len) * r * 3.4 - h / 2;
+  bx = Math.min(Math.max(bx, 4), layout.size - w - 4);
+  by = Math.min(Math.max(by, 4), layout.size - h - 4);
+  ctx.fillStyle = COLORS.plum;
+  roundRect(ctx, bx, by, w, h, h / 2);
+  ctx.fill();
+  ctx.fillStyle = COLORS.cream;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, bx + w / 2, by + h / 2 + 1);
 }
 
 function drawTile(ctx: CanvasRenderingContext2D, x: number, y: number, cell: number, color: string, gap: number) {

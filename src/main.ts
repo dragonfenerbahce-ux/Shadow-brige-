@@ -1,9 +1,10 @@
 import { sameCell, snapAngle, type Cell } from "./game/level";
 import { LEVELS } from "./game/levels";
 import { computeShadows } from "./game/shadows";
-import { exitDistances, isSafe, nextStep } from "./game/path";
-import { computeLayout, draw, sunPosition, type Layout, type PipState } from "./render";
+import { exitDistances, isSafe, nextStep, walkUntilStop } from "./game/path";
+import { computeLayout, draw, sunPosition, type CoachMarks, type Layout, type PipState } from "./render";
 import { browserStore, isUnlocked, loadProgress, recordWin, saveProgress } from "./progress";
+import { COACH_MESSAGES, PREVIEW_LEVEL, coachView, coachesLevel, startsInFirstLevel } from "./coach";
 import { initAudio, isMuted, playHot, playMelt, playStep, playTick, playWin, toggleMuted, unlockAudio } from "./audio";
 
 const STEP_MS = 420;
@@ -76,9 +77,63 @@ let dragStartAngle: number | null = null;
 let loopId = 0;
 /** Progress of the exit sparkle, 0-1, or null when not celebrating. */
 let sparkle: number | null = null;
+/** Coach: the player has turned the sun on this level. */
+let coachDragged = false;
+/** Coach: until this time (ms) the sun pulses after a tap on the board. */
+let nudgeUntil = 0;
+let coachLoopOn = false;
 
 function render() {
-  draw(ctx, layout, level, shadow, sunAngle, pip, sparkle);
+  draw(ctx, layout, level, shadow, sunAngle, pip, sparkle, coachMarks());
+}
+
+// --- First-play coach (levels 1-3, path preview on level 1 only) ----------------
+
+/** The coach's view for the current sun, plus Pip's walk when it is previewed. */
+function currentCoach() {
+  const walk = level.id === PREVIEW_LEVEL ? walkUntilStop(level, shadow, level.start, toExit) : null;
+  const reachesExit = walk !== null && sameCell(walk[walk.length - 1], level.exit);
+  return { view: coachView(level.id, coachDragged, reachesExit), walk };
+}
+
+function coachMarks(): CoachMarks | null {
+  if (phase !== "idle" || !coachesLevel(level.id)) return null;
+  const { view, walk } = currentCoach();
+  return {
+    pointAtSun: view.pointAtSun || performance.now() < nudgeUntil,
+    preview: view.preview ? walk : null,
+    doorGlow: view.pathReady,
+  };
+}
+
+/** Updates the coach message and the Go pulse, and keeps the coach animating while needed. */
+function applyCoach() {
+  const coaching = phase === "idle" && coachesLevel(level.id);
+  const view = coaching ? currentCoach().view : null;
+  goBtn.classList.toggle("pulse", view?.pathReady ?? false);
+  if (view?.message && messageEl.textContent !== view.message) setMessage(view.message);
+  if (coaching) runCoachLoop();
+}
+
+function runCoachLoop() {
+  if (coachLoopOn) return;
+  coachLoopOn = true;
+  const tick = () => {
+    const marks = coachMarks();
+    render();
+    if (!marks || playScreen.hidden || !(marks.pointAtSun || marks.doorGlow)) {
+      coachLoopOn = false;
+      return;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function nudgeTowardSun() {
+  setMessage(COACH_MESSAGES.tapBoard);
+  nudgeUntil = performance.now() + 1500;
+  runCoachLoop();
 }
 
 function resize() {
@@ -134,12 +189,14 @@ function restart() {
   setMessage(level.hint ?? HINT);
   updateHud();
   render();
+  applyCoach();
 }
 
 function loadLevel(index: number) {
   levelIndex = index;
   level = LEVELS[index];
   toExit = exitDistances(level);
+  coachDragged = false;
   // The new level may have a different board size, so shadows must match it before anything draws.
   sunAngle = level.sunAngle;
   shadow = computeShadows(level, sunAngle);
@@ -209,14 +266,20 @@ function setSun(angle: number) {
   sunAngle = angle;
   shadow = computeShadows(level, sunAngle);
   playTick();
+  if (dragStartAngle !== null) coachDragged = true;
   if (phase !== "walking") render();
+  applyCoach();
 }
 
 canvas.addEventListener("pointerdown", (e) => {
   if (phase !== "idle" && phase !== "walking") return;
   const p = pointerPos(e);
-  if (!canGrab(p)) return;
+  if (!canGrab(p)) {
+    if (coachesLevel(level.id)) nudgeTowardSun();
+    return;
+  }
   canvas.setPointerCapture(e.pointerId);
+  nudgeUntil = 0;
   dragStartAngle = sunAngle;
   setSun(angleAt(p));
 });
@@ -241,6 +304,7 @@ canvas.addEventListener("pointercancel", endDrag);
 function startWalk() {
   phase = "walking";
   setMessage("Keep Pip in the shadow!");
+  goBtn.classList.remove("pulse");
   updateHud();
 
   const id = ++loopId;
@@ -251,6 +315,9 @@ function startWalk() {
   let hotSince: number | null = null;
   let winAt = 0;
   let previousBest: number | undefined;
+  /** Coach: since when Pip has been waiting with no dark path, and whether that was said. */
+  let waitingSince: number | null = null;
+  let waitingShown = false;
 
   function frame(now: number) {
     if (id !== loopId) return;
@@ -274,6 +341,17 @@ function startWalk() {
           from = to;
           to = null;
           f = 0;
+        }
+      }
+      if (to) {
+        if (waitingShown) setMessage("Keep Pip in the shadow!");
+        waitingSince = null;
+        waitingShown = false;
+      } else if (coachesLevel(level.id) && hotSince === null) {
+        waitingSince ??= now;
+        if (!waitingShown && now - waitingSince > 1000) {
+          setMessage(COACH_MESSAGES.waiting);
+          waitingShown = true;
         }
       }
       const target = to ?? from;
@@ -377,4 +455,6 @@ soundBtn.addEventListener("click", () => {
 });
 updateSoundButton();
 
-showSelect();
+// New players (no finished level) start right in level 1; everyone else sees the level list.
+if (startsInFirstLevel(progress)) showPlay(0);
+else showSelect();

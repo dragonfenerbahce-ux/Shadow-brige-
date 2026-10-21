@@ -15,9 +15,11 @@
 - [x] Shadows reach the board edge; all 48 levels rebuilt and played through
 - [x] Result card (Next / Retry / Levels), Pip hop, exit sparkle; #unlock test link
 - [x] Synthesized music and sound effects with an on/off button
+- [x] First-play coach on levels 1-3 (path preview on level 1 only)
 
 ## Now
 - [ ] Product Owner listens to the sound on iPhone
+- [ ] Coach playtest: 3 new players, timed (see SESSION_LOG)
 
 ## Next
 - [ ] iPhone playtest with a friend: is it fun?

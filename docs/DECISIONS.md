@@ -80,3 +80,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Free, no licenses, no new dependencies, tiny page size.
 - Alternative considered: Free recorded music and effect files.
 - Trade-off: Sounds are simpler and more "electronic" than recorded ones; only the Product Owner can judge how they sound.
+
+### 2026-10-21: First-play coach (onboarding experiment)
+- Decision: New players (no finished level) open straight into level 1; players with progress still see the level list. On levels 1-3 the sun pulses with a "Drag the sun" bubble until the first drag, a tap on the board says "Drag the sun, not Pip.", and if Pip waits after Go for over 1 s the game says "Pip needs a dark path. Turn the sun." On level 1 only, dots preview where Pip would walk with the player's current sun; when they reach the door, the door glows and Go pulses. The coach never moves the sun itself.
+- Reason: Playtests: players did not understand the controls and quit within about 30 seconds. Code review showed silent board taps, a "frozen" Go on wrong sun angles, and a long text-only hint after a 48-level list.
+- Alternative considered: A separate instruction screen before level 1; path preview on levels 1-3.
+- Trade-off: The level 1 preview makes that level close to self-solving; levels 2-3 keep the puzzle.
