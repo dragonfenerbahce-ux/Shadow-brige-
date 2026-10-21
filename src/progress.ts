@@ -44,7 +44,10 @@ export function recordWin(progress: Progress, levelId: number, moves: number): P
   return { ...progress, [levelId]: best === undefined ? moves : Math.min(best, moves) };
 }
 
-/** Level 1 is always open; every other level opens when the one before it is finished. */
-export function isUnlocked(progress: Progress, levelId: number): boolean {
-  return levelId === 1 || progress[levelId - 1] !== undefined;
+/**
+ * Level 1 is always open; every other level opens when the one before it is finished.
+ * `unlockAll` opens every level, for testing (the page link ends with #unlock).
+ */
+export function isUnlocked(progress: Progress, levelId: number, unlockAll = false): boolean {
+  return unlockAll || levelId === 1 || progress[levelId - 1] !== undefined;
 }

@@ -68,3 +68,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Product Owner's playtest (with a marked screenshot of level 18): cells right behind a block were lit, which felt physically wrong; the height numbers were abstract.
 - Alternative considered: Keep heights and draw blocks as 3D pillars so short shadows look natural.
 - Trade-off: Less puzzle variety without heights; boards get darker; progress on phones is reset once.
+
+### 2026-10-21: Test mode link opens every level
+- Decision: A page link ending with `#unlock` opens all levels; the normal link keeps levels unlocking in order.
+- Reason: Product Owner tests levels often and should not have to replay earlier ones.
+- Alternative considered: Unlock every level for everyone.
+- Trade-off: Anyone who learns the `#unlock` link can skip ahead.

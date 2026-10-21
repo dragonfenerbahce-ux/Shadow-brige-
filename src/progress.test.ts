@@ -53,4 +53,8 @@ describe("progress", () => {
     expect(isUnlocked({ 1: 3 }, 2)).toBe(true);
     expect(isUnlocked({ 1: 3 }, 3)).toBe(false);
   });
+
+  it("opens every level in test mode", () => {
+    expect(isUnlocked({}, 48, true)).toBe(true);
+  });
 });

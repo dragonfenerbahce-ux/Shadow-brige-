@@ -31,6 +31,8 @@ const levelGrid = document.querySelector<HTMLDivElement>("#level-grid")!;
 const doneCountEl = document.querySelector<HTMLSpanElement>("#done-count")!;
 
 const store = browserStore();
+/** Test mode: a link ending with #unlock opens every level. */
+const unlockAll = location.hash === "#unlock";
 let progress = loadProgress(store);
 
 type Phase = "idle" | "walking" | "melting" | "won" | "melted";
@@ -106,7 +108,7 @@ function renderLevelGrid() {
       btn.type = "button";
       btn.className = "level-btn";
       const best = progress[l.id];
-      const open = isUnlocked(progress, l.id);
+      const open = isUnlocked(progress, l.id, unlockAll);
       btn.disabled = !open;
       if (best !== undefined) btn.classList.add("done");
       const label = best !== undefined ? `best ${best}` : open ? "new" : "locked";
