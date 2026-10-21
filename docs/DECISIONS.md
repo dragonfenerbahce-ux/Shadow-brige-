@@ -74,3 +74,9 @@ Requires Node.js 22.12+ on the Mac.
 - Reason: Product Owner tests levels often and should not have to replay earlier ones.
 - Alternative considered: Unlock every level for everyone.
 - Trade-off: Anyone who learns the `#unlock` link can skip ahead.
+
+### 2026-10-21: Sound is synthesized with Web Audio
+- Decision: Music (a soft four-chord sunset pad with bell notes) and effects (sun tick, step, warning, melt, win) are generated in code with the Web Audio API; no sound files. A round button bottom-right turns sound on/off, saved on the device. Sound starts after the first tap; on iPhone it asks for "playback" so the silent switch should not mute it (Safari 16.4+).
+- Reason: Free, no licenses, no new dependencies, tiny page size.
+- Alternative considered: Free recorded music and effect files.
+- Trade-off: Sounds are simpler and more "electronic" than recorded ones; only the Product Owner can judge how they sound.

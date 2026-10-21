@@ -4,6 +4,7 @@ import { computeShadows } from "./game/shadows";
 import { exitDistances, isSafe, nextStep } from "./game/path";
 import { computeLayout, draw, sunPosition, type Layout, type PipState } from "./render";
 import { browserStore, isUnlocked, loadProgress, recordWin, saveProgress } from "./progress";
+import { initAudio, isMuted, playHot, playMelt, playStep, playTick, playWin, toggleMuted, unlockAudio } from "./audio";
 
 const STEP_MS = 420;
 const MELT_SECONDS = 0.7;
@@ -31,6 +32,7 @@ const playScreen = document.querySelector<HTMLElement>("#play-screen")!;
 const levelGrid = document.querySelector<HTMLDivElement>("#level-grid")!;
 const doneCountEl = document.querySelector<HTMLSpanElement>("#done-count")!;
 const titleEl = document.querySelector<HTMLSpanElement>("#game-title")!;
+const soundBtn = document.querySelector<HTMLButtonElement>("#sound")!;
 const resultEl = document.querySelector<HTMLDivElement>("#result")!;
 const resultCard = resultEl.querySelector<HTMLDivElement>(".result-card")!;
 const resultTitle = document.querySelector<HTMLHeadingElement>("#result-title")!;
@@ -206,6 +208,7 @@ function setSun(angle: number) {
   if (angle === sunAngle) return;
   sunAngle = angle;
   shadow = computeShadows(level, sunAngle);
+  playTick();
   if (phase !== "walking") render();
 }
 
@@ -256,6 +259,7 @@ function startWalk() {
       if (!to) {
         to = nextStep(level, shadow, from, toExit);
         stepStart = now;
+        if (to) playStep();
       }
       let f = 0;
       if (to) {
@@ -279,6 +283,7 @@ function startWalk() {
       if (sameCell(from, level.exit) && !to) {
         phase = "celebrating";
         winAt = now;
+        playWin();
         previousBest = progress[level.id];
         progress = recordWin(progress, level.id, moves);
         saveProgress(store, progress);
@@ -294,12 +299,14 @@ function startWalk() {
           if (hotSince === null) {
             hotSince = now;
             setMessage("Pip is in the sun! Shade it!");
+            playHot();
           }
           const warning = level.id <= WARNING_LEVELS ? WARNING_MS : 0;
           pip.hot = Math.min(1, (now - hotSince) / WARNING_MS);
           if (now - hotSince >= warning) {
             phase = "melting";
             meltStart = now;
+            playMelt();
             dragStartAngle = null;
             setMessage("Pip melted in the light.");
             updateHud();
@@ -351,5 +358,23 @@ titleEl.addEventListener("click", () => {
   renderLevelGrid();
 });
 window.addEventListener("resize", resize);
+
+// --- Sound ---------------------------------------------------------------------
+
+initAudio(store);
+
+function updateSoundButton() {
+  const off = isMuted();
+  soundBtn.setAttribute("aria-pressed", String(off));
+  soundBtn.setAttribute("aria-label", off ? "Turn sound on" : "Turn sound off");
+}
+
+// Browsers allow sound only after a tap, so the first tap anywhere starts it.
+document.addEventListener("pointerdown", unlockAudio);
+soundBtn.addEventListener("click", () => {
+  toggleMuted();
+  updateSoundButton();
+});
+updateSoundButton();
 
 showSelect();

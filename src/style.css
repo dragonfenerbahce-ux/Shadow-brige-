@@ -228,3 +228,27 @@ body {
     animation: none;
   }
 }
+
+.sound-btn {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255 244 224 / 85%);
+  color: var(--plum);
+  box-shadow: 0 4px 12px rgb(59 42 92 / 30%);
+}
+
+.sound-btn .sound-off,
+.sound-btn[aria-pressed="true"] .sound-on {
+  display: none;
+}
+
+.sound-btn[aria-pressed="true"] .sound-off {
+  display: inline;
+}

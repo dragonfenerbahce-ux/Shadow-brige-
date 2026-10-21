@@ -2,6 +2,11 @@
 
 Latest 5 entries only. Older entries are summarized at the bottom.
 
+## 2026-10-21: Sound, background fix, title-tap test mode
+- Done: Fixed the repeating background on long pages, then a white background inside the Claude app (gradient now on body). Added a title-tap (5x) test switch because `#unlock` may not reach the page in Claude's viewer; Product Owner confirmed it works. Added synthesized music and effects (src/audio.ts) with a sound on/off button. 220 tests pass; in headless Chromium the audio starts only after the first tap, notes play for ticks/steps/win, and the mute choice survives a reload.
+- Next step: Product Owner listens on iPhone (with and without the silent switch) and says if music/effects feel right. Then: friend playtest round.
+- Struggled with: A fixed pseudo-element background did not show in Claude's iOS viewer; keep backgrounds on body.
+
 ## 2026-10-21: Result card, Pip hop, exit sparkle, #unlock test link
 - Done: Added `#unlock` link (all levels open for the Product Owner). Product Owner synced the repo to the Mac with GitHub Desktop. Built the result card (win: title, moves, New best/Best, Next/Retry/Levels; melt: Retry/Levels), Pip hops on each step, sparkle at the exit before the card. 218 tests pass; win and melt cards and every button checked in headless Chromium; all 48 levels played through via the card's Next button.
 - Next step: Product Owner tries the new card on iPhone. Then pick: sound, a new mechanic, or a friend playtest round.
@@ -22,12 +27,7 @@ Latest 5 entries only. Older entries are summarized at the bottom.
 - Next step: Product Owner plays on iPhone, especially levels 1-10 (should be quick) and 35+ (light stones). Then: result overlay or next mechanic.
 - Struggled with: Level select bug was missed because earlier browser tests only used the Next button; now the test opens every level from the grid.
 
-## 2026-10-19: 10 levels, level select, saved progress
-- Done: Moved levels to src/game/levels.ts and grew to 10 (turns needed: 2,3,4,5,6,9 on 7x7; 6,7,8,9 on 9x9). Added level select screen and saved progress (src/progress.ts, browser storage, levels unlock in order). 59 tests pass; all 10 levels played through in headless Chromium; progress survived a reload. Test page republished.
-- Next step: Product Owner plays the 10 levels on iPhone. Then decide the first new mechanic ("light stone" tile proposed instead of a bomb).
-- Struggled with: Product Owner suggested a bomb tile; proposed a light-themed tile instead to keep the calm style. Many solutions are "keep turning one way"; watch for repetition.
-
 ## Older entries (summary)
 - 2026-10-18/19: Project setup (CLAUDE.md, docs, permissions, Git/GitHub); chose Shadowbridge core prototype over simpler apps.
 - Approved stack: TypeScript + Vite + Canvas 2D + Vitest; Product Owner tests via a private claude.ai test page.
-- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions (8, later 16).
+- First playable level 1 (one-angle rule), then 3 levels; playtest said too easy, which led to the live-walk rule (Pip walks while the sun turns), then a second playtest made the sun snap to fixed directions (8, later 16); levels grew to 10 with a level select and saved progress.
